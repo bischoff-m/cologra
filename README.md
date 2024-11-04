@@ -19,6 +19,7 @@ remove the build directory.
 make install
 make build
 make run
+make build-run
 make clean
 ```
 

@@ -1,39 +1,98 @@
-// Author: Wes Kendall
-// Copyright 2011 www.mpitutorial.com
-// This code is provided freely with the tutorials on mpitutorial.com. Feel
-// free to modify it for your own use. Any distribution of the code must
-// either provide a link to www.mpitutorial.com or keep this header intact.
-//
-// An intro MPI hello world program that uses MPI_Init, MPI_Comm_size,
-// MPI_Comm_rank, MPI_Finalize, and MPI_Get_processor_name.
-//
-#include <mpi.h>
 #include <stdio.h>
+#include <vector>
+#include <algorithm>
+
+typedef std::vector<int> Coloring;
+
+class Graph : public std::vector<std::vector<int>>
+{
+public:
+    Graph(std::initializer_list<std::vector<int>> list) : std::vector<std::vector<int>>(list) {}
+
+    /**
+     * Sort neighbors of each node in ascending order. This is done to minimize
+     * the look-up time for the smallest color not used by any of its neighbors.
+     */
+    void sortNeighbors()
+    {
+        for (std::vector<int> &neighbors : *this)
+            std::sort(neighbors.begin(), neighbors.end());
+    }
+};
+
+/**
+ * Greedy sequential coloring
+ *
+ * Reference
+ * ---------
+ * Page 691 of the paper:
+ * Gebremedhin et al. “What Color Is Your Jacobian? Graph Coloring
+ * for Computing Derivatives.” SIAM Review 47, no. 4 (January 2005): 629–705.
+ * https://doi.org/10.1137/S0036144504444711.
+ */
+Coloring greedyColoring(Graph graph)
+{
+    int size = graph.size();
+    Coloring coloring(size, -1);
+
+    for (int node = 0; node < size; node++)
+    {
+        // Find smallest color not used by any of its neighbors
+        int color;
+        for (color = 0; color < size; color++)
+        {
+            bool available = true;
+            for (int neighbor : graph[node])
+                if (coloring[neighbor] == color)
+                {
+                    available = false;
+                    break;
+                }
+            if (available)
+                break;
+        }
+
+        // Assign the found color to the node
+        coloring[node] = color;
+    }
+
+    return coloring;
+}
+
+/**
+ * Check if the given coloring is a valid distance-1 coloring.
+ */
+bool isDistance1Coloring(Graph graph, Coloring coloring)
+{
+    for (int node = 0; node < graph.size(); node++)
+    {
+        for (int neighbor : graph[node])
+            if (coloring[node] == coloring[neighbor])
+                return false;
+    }
+
+    return true;
+}
 
 int main(int argc, char **argv)
 {
-    // Initialize the MPI environment. The two arguments to MPI Init are not
-    // currently used by MPI implementations, but are there in case future
-    // implementations might need the arguments.
-    MPI_Init(NULL, NULL);
+    Graph graph{
+        {2, 3},
+        {2},
+        {0, 1, 3, 4},
+        {0, 2},
+        {2},
+    };
+    graph.sortNeighbors();
 
-    // Get the number of processes
-    int world_size;
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    Coloring coloring = greedyColoring(graph);
+    for (int node = 0; node < coloring.size(); node++)
+        printf("Node %d is colored with %d\n", node, coloring[node]);
 
-    // Get the rank of the process
-    int world_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    if (isDistance1Coloring(graph, coloring))
+        printf("The coloring is a valid distance-1 coloring\n");
+    else
+        printf("The coloring is not a valid distance-1 coloring\n");
 
-    // Get the name of the processor
-    char processor_name[MPI_MAX_PROCESSOR_NAME];
-    int name_len;
-    MPI_Get_processor_name(processor_name, &name_len);
-
-    // Print off a hello world message
-    printf("Hello world from processor %s, rank %d out of %d processors\n",
-           processor_name, world_rank, world_size);
-
-    // Finalize the MPI environment. No more MPI calls can be made after this
-    MPI_Finalize();
+    return 0;
 }

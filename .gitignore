@@ -1,6 +1,6 @@
 *.local*
 .vscode/
-/build
+/out
 !**/.gitkeep
 
 
