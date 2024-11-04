@@ -1,6 +1,6 @@
 *.local*
-.vscode/**/*
-build/**/*
+.vscode/
+/build
 !**/.gitkeep
 
 
