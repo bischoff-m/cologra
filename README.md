@@ -7,35 +7,20 @@ Description](https://www.stce.rwth-aachen.de/teaching/winter-2024-25/software-la
 
 [Zotero Group](https://www.zotero.org/groups/5682542/parallel_graph_algorithms)
 
-### Installing
+## Usage
 
-You need to have CMake and OpenMPI installed. If you are using Ubuntu, you can
-install them with the following command:
-
-```shell
-sudo apt-get install cmake openmpi-bin openmpi-common libopenmpi-dev
-```
-
-### Building
-
-To build the project, run the following commands.
+You need to have CMake and
+[OpenMPI](https://docs.open-mpi.org/en/v5.0.x/launching-apps/quickstart.html)
+installed. If you are using Ubuntu, you can apt-get install them with `make
+install`. Use the other `make` commands to build/run the project and to
+remove the build directory.
 
 ```shell
-cmake -S . -B ./build
-cmake --build ./build
+make install
+make build
+make run
+make clean
 ```
-
-### Running
-
-Then use [OpenMPI](https://docs.open-mpi.org/en/v5.0.x/launching-apps/quickstart.html) to run the program.
-
-```shell
-mpirun -n 4 build/cologra
-```
-
-> [!NOTE]
-> If you are using a Linux shell, you can use the scripts at `./cmd` as
-> shortcuts. E.g. `source cmd/build.sh`
 
 ## Editor Setup
 
