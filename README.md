@@ -11,16 +11,16 @@ Description](https://www.stce.rwth-aachen.de/teaching/winter-2024-25/software-la
 
 You need to have CMake and
 [OpenMPI](https://docs.open-mpi.org/en/v5.0.x/launching-apps/quickstart.html)
-installed. If you are using Ubuntu, you can apt-get install them with `make
-install`. Use the other `make` commands to build/run the project and to
+installed. If you are using Ubuntu, you can apt-get install them with `./cologra.sh
+install`. Use the other `./cologra.sh` commands to build/run the project and to
 remove the build directory.
 
 ```shell
-make install
-make build
-make run
-make build-run
-make clean
+./cologra.sh install
+./cologra.sh build
+./cologra.sh run
+./cologra.sh build-run
+./cologra.sh clean
 ```
 
 ## Package Manager
