@@ -1,4 +1,4 @@
-# ColoGra
+# Cologra
 
 ## Links
 
