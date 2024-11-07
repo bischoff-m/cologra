@@ -11,4 +11,20 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 
 # MPI
 find_package(MPI REQUIRED)
-target_link_libraries(cologra PUBLIC MPI::MPI_CXX)
+target_link_libraries(cologra PRIVATE MPI::MPI_CXX)
+
+# Eigen3
+find_package(Eigen3 CONFIG REQUIRED)
+target_link_libraries(cologra PRIVATE Eigen3::Eigen)
+
+# Fast Matrix Market
+include(FetchContent)
+FetchContent_Declare(
+        fast_matrix_market
+        GIT_REPOSITORY https://github.com/alugowski/fast_matrix_market
+        GIT_TAG main
+        GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(fast_matrix_market)
+
+target_link_libraries(cologra PRIVATE fast_matrix_market::fast_matrix_market)

@@ -26,12 +26,11 @@ make clean
 ## Package Manager
 
 We are using [vcpkg](https://github.com/Microsoft/vcpkg) as a package manager.
-
+Follow the instructions on the GitHub page to install it. Then you can install
+the required packages with:
 
 ```shell
-vcpkg install boost
-vcpkg install fmt
-vcpkg install spdlog
+vcpkg install
 ```
 
 ## Editor Setup

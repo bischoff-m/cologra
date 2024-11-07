@@ -1,13 +1,20 @@
 #include <stdio.h>
 #include <vector>
 #include <algorithm>
+#include <Eigen/SparseCore>
+#include <fast_matrix_market/app/Eigen.hpp>
+#include <fstream>
+#include <iostream>
+#include <string>
 
-typedef std::vector<int> Coloring;
+using namespace std;
 
-class Graph : public std::vector<std::vector<int>>
+typedef vector<int> Coloring;
+
+class Graph : public vector<vector<int>>
 {
 public:
-    Graph(std::initializer_list<std::vector<int>> list) : std::vector<std::vector<int>>(list) {}
+    Graph(initializer_list<vector<int>> list) : vector<vector<int>>(list) {}
 
     /**
      * Sort neighbors of each node in ascending order. This is done to minimize
@@ -15,8 +22,8 @@ public:
      */
     void sortNeighbors()
     {
-        for (std::vector<int> &neighbors : *this)
-            std::sort(neighbors.begin(), neighbors.end());
+        for (vector<int> &neighbors : *this)
+            sort(neighbors.begin(), neighbors.end());
     }
 };
 
@@ -29,6 +36,9 @@ public:
  * Gebremedhin et al. “What Color Is Your Jacobian? Graph Coloring
  * for Computing Derivatives.” SIAM Review 47, no. 4 (January 2005): 629–705.
  * https://doi.org/10.1137/S0036144504444711.
+ *
+ * @param graph Graph
+ * @return Coloring
  */
 Coloring greedyColoring(Graph graph)
 {
@@ -61,6 +71,11 @@ Coloring greedyColoring(Graph graph)
 
 /**
  * Check if the given coloring is a valid distance-1 coloring.
+ * A coloring is distance-1 if no two adjacent nodes have the same color.
+ *
+ * @param graph Graph
+ * @param coloring Coloring
+ * @return True if the coloring is a valid distance-1 coloring
  */
 bool isDistance1Coloring(Graph graph, Coloring coloring)
 {
@@ -74,7 +89,21 @@ bool isDistance1Coloring(Graph graph, Coloring coloring)
     return true;
 }
 
-int main(int argc, char **argv)
+/**
+ * Read a matrix market file and return the sparse matrix.
+ *
+ * @param filename Path to the matrix market file
+ * @return Sparse matrix
+ */
+Eigen::SparseMatrix<double> readMatrixMarket(string filename)
+{
+    ifstream f(filename);
+    Eigen::SparseMatrix<double> mat;
+    fast_matrix_market::read_matrix_market_eigen(f, mat);
+    return mat;
+}
+
+void testGreedyColoring()
 {
     Graph graph{
         {2, 3},
@@ -93,6 +122,11 @@ int main(int argc, char **argv)
         printf("The coloring is a valid distance-1 coloring\n");
     else
         printf("The coloring is not a valid distance-1 coloring\n");
+}
 
+int main(int argc, char **argv)
+{
+    Eigen::SparseMatrix<double> mat = readMatrixMarket("data/matrix/can___24.mtx");
+    printf("Read a sparse matrix with %ld rows and %ld columns\n", mat.rows(), mat.cols());
     return 0;
 }
