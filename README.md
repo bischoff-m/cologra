@@ -23,12 +23,23 @@ make build-run
 make clean
 ```
 
+## Package Manager
+
+We are using [vcpkg](https://github.com/Microsoft/vcpkg) as a package manager.
+
+
+```shell
+vcpkg install boost
+vcpkg install fmt
+vcpkg install spdlog
+```
+
 ## Editor Setup
 
-If you are using CLion, you can use [this
+If you are using **CLion**, you can use [this
 setup](https://www.jetbrains.com/help/clion/openmpi.html).
 
-For VS Code you can install the [CMake Tools
+For **VS Code** you can install the [CMake Tools
 extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
 and GDB.
 

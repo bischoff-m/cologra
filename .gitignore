@@ -1,7 +1,11 @@
 *.local*
 .vscode/
-/out
+/build
 !**/.gitkeep
+
+
+# vcpkg
+/vcpkg_installed
 
 
 # Prerequisites
