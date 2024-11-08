@@ -21,24 +21,43 @@ remove the build directory.
 ./cologra.sh run
 ./cologra.sh build-run
 ./cologra.sh clean
+./cologra.sh format
 ```
 
 ## Package Manager
 
-We are using [vcpkg](https://github.com/Microsoft/vcpkg) as a package manager.
-Follow the instructions on the GitHub page to install it. Then you can install
-the required packages with:
+We use [vcpkg](https://github.com/Microsoft/vcpkg) as a package manager. Follow
+the instructions on the GitHub page to install it. Then you can install the
+required packages with:
 
 ```shell
 vcpkg install
 ```
 
+## Code Style
+
+We use [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) to format the
+code. You can run it with:
+
+```shell
+./cologra.sh format
+```
+
 ## Editor Setup
 
-If you are using **CLion**, you can use [this
-setup](https://www.jetbrains.com/help/clion/openmpi.html).
+### CLion
 
-For **VS Code** you can install the [CMake Tools
+ClangFormat is already configured in the `.clang-format` file and will
+automatically be used by CLion. You can use [this
+setup](https://www.jetbrains.com/help/clion/openmpi.html) to configure CLion to
+use OpenMPI.
+
+### VS Code
+
+Install the [clang-format
+extension](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format)
+and configure it according to the extension's instructions.
+Also, install the [CMake Tools
 extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
 and GDB.
 

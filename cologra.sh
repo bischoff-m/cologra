@@ -13,16 +13,18 @@ case $1 in
     "build-run")
         source cologra.sh build && source cologra.sh run
         ;;
-
     "install")
-        sudo apt-get install cmake openmpi-bin openmpi-common libopenmpi-dev
+        sudo apt-get install cmake openmpi-bin openmpi-common libopenmpi-dev clang-format
         vcpkg install
         ;;
     "clean")
         rm -rf build
         ;;
+    "format")
+        find src -iname '*.h' -o -iname '*.cpp' | xargs clang-format -i
+        ;;
     *)
-        echo "Usage: $0 {build|run|build-run|install|clean}"
+        echo "Usage: $0 {build|run|build-run|install|clean|format}"
         exit 1
         ;;
 esac

@@ -1,0 +1,8 @@
+# Reference: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+AlignAfterOpenBracket: DontAlign # Prevents aligning arguments after an open bracket
+BasedOnStyle: LLVM # Use the LLVM style
+BinPackArguments: false # Prevents putting multiple arguments on the same line
+BinPackParameters: false # Prevents putting multiple parameters on the same line
+ColumnLimit: 80 # Limit the number of columns to 80
+Language: Cpp # Use the C++ language
+Standard: Latest # Use the latest C++ standard
