@@ -26,5 +26,7 @@ FetchContent_Declare(
         GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(fast_matrix_market)
-
 target_link_libraries(cologra PRIVATE fast_matrix_market::fast_matrix_market)
+
+# Google Test
+add_subdirectory(test)

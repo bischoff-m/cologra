@@ -22,6 +22,7 @@ remove the build directory.
 ./cologra.sh build-run
 ./cologra.sh clean
 ./cologra.sh format
+./cologra.sh test
 ```
 
 ## Package Manager
@@ -41,6 +42,15 @@ code. You can run it with:
 
 ```shell
 ./cologra.sh format
+```
+
+## Testing
+
+We use [Google Test](https://github.com/google/googletest) for testing. After
+building the project, you can run the tests with:
+
+```shell
+./cologra.sh test
 ```
 
 ## Editor Setup

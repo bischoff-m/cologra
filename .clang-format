@@ -5,4 +5,5 @@ BinPackArguments: false # Prevents putting multiple arguments on the same line
 BinPackParameters: false # Prevents putting multiple parameters on the same line
 ColumnLimit: 80 # Limit the number of columns to 80
 Language: Cpp # Use the C++ language
+SortIncludes: CaseSensitive # Sort includes in a case-sensitive manner
 Standard: Latest # Use the latest C++ standard

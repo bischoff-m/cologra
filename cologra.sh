@@ -23,8 +23,11 @@ case $1 in
     "format")
         find src -iname '*.h' -o -iname '*.cpp' | xargs clang-format -i
         ;;
+    "test")
+        ./build/test/cologra-test
+        ;;
     *)
-        echo "Usage: $0 {build|run|build-run|install|clean|format}"
+        echo "Usage: $0 {build|run|build-run|install|clean|format|test}"
         exit 1
         ;;
 esac
