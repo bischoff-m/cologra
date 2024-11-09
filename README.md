@@ -7,22 +7,43 @@ Description](https://www.stce.rwth-aachen.de/teaching/winter-2024-25/software-la
 
 [Zotero Group](https://www.zotero.org/groups/5682542/parallel_graph_algorithms)
 
-## Usage
+## Installation
 
 You need to have CMake and
 [OpenMPI](https://docs.open-mpi.org/en/v5.0.x/launching-apps/quickstart.html)
-installed. If you are using Ubuntu, you can apt-get install them with `./cologra.sh
-install`. Use the other `./cologra.sh` commands to build/run the project and to
-remove the build directory.
+installed. If you want to format the code, you also need to have
+[ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) installed. For
+testing, we use [Google Test](https://github.com/google/googletest), but you
+don't need to install it.
 
 ```shell
-./cologra.sh install
-./cologra.sh build
-./cologra.sh run
-./cologra.sh build-run
-./cologra.sh clean
-./cologra.sh format
-./cologra.sh test
+sudo apt-get install cmake
+sudo apt-get install openmpi-bin openmpi-common libopenmpi-dev
+sudo apt-get install clang-format
+```
+
+## Usage
+
+To compile, run the tests, and install:
+
+```shell
+make
+make test
+sudo make install
+```
+
+Here is a full list of the available commands:
+
+```shell
+make build # Same as make
+make run
+make debug
+make test
+make verbose_test
+make install
+make uninstall
+make format
+make clean
 ```
 
 ## Package Manager
@@ -33,24 +54,6 @@ required packages with:
 
 ```shell
 vcpkg install
-```
-
-## Code Style
-
-We use [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) to format the
-code. You can run it with:
-
-```shell
-./cologra.sh format
-```
-
-## Testing
-
-We use [Google Test](https://github.com/google/googletest) for testing. After
-building the project, you can run the tests with:
-
-```shell
-./cologra.sh test
 ```
 
 ## Editor Setup

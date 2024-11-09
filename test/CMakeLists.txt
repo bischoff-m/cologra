@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(cologra-test CXX)
+project(cologra_test CXX)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
@@ -25,5 +25,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE fast_matrix_market::fast_matrix_ma
 # Google Test
 enable_testing()
 find_package(GTest CONFIG REQUIRED)
+include(GoogleTest)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main)
-add_test(AllTestsInMain ${PROJECT_NAME})
+gtest_discover_tests(${PROJECT_NAME})
