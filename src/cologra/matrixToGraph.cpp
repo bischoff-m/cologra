@@ -18,7 +18,9 @@ Graph columnIntersectionGraph(const Eigen::SparseMatrix<double> &matrix) {
     // Add edges between columns with non-zero entries in the same row
     for (auto it1 = columnsNonZero.begin(); it1 != columnsNonZero.end(); it1++)
       for (auto it2 = std::next(it1); it2 != columnsNonZero.end(); it2++)
-        add_edge(*it1, *it2, graph);
+        // Only add an edge if it does not already exist
+        if (!boost::edge(*it1, *it2, graph).second)
+          boost::add_edge(*it1, *it2, graph);
   }
 
   return graph;

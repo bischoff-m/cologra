@@ -52,7 +52,7 @@ debug:
 test: build
 	( cd build/tests && ctest . || ctest . --rerun-failed --output-on-failure )
 
-verbose_test: build
+test_verbose: build
 	( cd build/tests && ctest . --verbose || ctest . --rerun-failed --output-on-failure )
 
 install:

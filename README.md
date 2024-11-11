@@ -39,7 +39,7 @@ make build # Same as make
 make run
 make debug
 make test
-make verbose_test
+make test_verbose
 make install
 make uninstall
 make format
