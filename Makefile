@@ -9,25 +9,25 @@
 #
 # To compile and run the tests:
 #
-#       make
-#       make test
+#     make
+#     make test
 #
 # To compile with an alternate compiler:
 #
-#       make CC=gcc CXX=g++
+#     make CC=gcc CXX=g++
 #
 # To compile/install for system-wide usage (typically in /usr/local):
 #
-#       make
-#       sudo make install
+#     make
+#     sudo make install
 #
 # To clean up the files:
 #
-#       make clean
+#     make clean
 #
 # To uninstall:
 #
-#       make uninstall
+#     make uninstall
 #
 #-------------------------------------------------------------------------------
 
@@ -44,16 +44,16 @@ build:
 	( cd build && cmake .. --preset=vcpkg && cmake --build . --config Release -j${JOBS} )
 
 run: build
-	- mpirun -np 1 build/cologra
+	- mpirun -np 1 build/src/cologra_cli
 
 debug:
 	( cd build && cmake -DCMAKE_BUILD_TYPE=Debug .. --preset=vcpkg && cmake --build . --config Release -j${JOBS} )
 
 test: build
-	( cd build/test && ctest . || ctest . --rerun-failed --output-on-failure )
+	( cd build/tests && ctest . || ctest . --rerun-failed --output-on-failure )
 
 verbose_test: build
-	( cd build/test && ctest . --verbose || ctest . --rerun-failed --output-on-failure )
+	( cd build/tests && ctest . --verbose || ctest . --rerun-failed --output-on-failure )
 
 install:
 	( cd build && cmake --install . )
@@ -63,7 +63,7 @@ uninstall:
 	- xargs rm < build/install_manifest.txt
 
 format:
-	- find src test -iname '*.h' -o -iname '*.cpp' | xargs clang-format -i
+	- find src tests -iname '*.hpp' -o -iname '*.cpp' | xargs clang-format -i
 
 # Remove all build files
 clean:

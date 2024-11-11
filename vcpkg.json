@@ -1,6 +1,8 @@
 {
   "dependencies": [
+    "boost-graph",
     "eigen3",
-    "gtest"
+    "gtest",
+    "fmt"
   ]
 }
