@@ -1,0 +1,10 @@
+[project]
+name = "suitesparse-cologra"
+version = "0.1.0"
+description = "Automated downloader for matrices from the SuiteSparse Matrix Collection"
+requires-python = ">=3.12"
+dependencies = [
+    "humanize>=4.11.0",
+    "pandas>=2.2.3",
+    "tqdm>=4.67.1",
+]
