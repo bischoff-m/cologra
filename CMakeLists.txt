@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 
 # -fopenmp flag (enables OpenMP)
-# set(GCC_COVERAGE_COMPILE_FLAGS "-Wall -pedantic -lm -O3 -funroll-loops -fopenmp")
+set(GCC_COVERAGE_COMPILE_FLAGS "-Wall -pedantic -lm -O3 -funroll-loops -fopenmp")
 
 
 # fmt
@@ -29,6 +29,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fast_matrix_market)
 
 # Boost Graph Library
+#FIND_PACKAGE(Boost)
+#IF (Boost_FOUND)
+#    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+#    ADD_DEFINITIONS( "-DHAS_BOOST" )
+#ENDIF()
 find_package(Boost REQUIRED COMPONENTS graph)
 
 # Source files
