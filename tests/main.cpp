@@ -14,6 +14,7 @@ class SampleGraph : public ::testing::Test {
 public:
   Graph graph;
   ColorMap coloring;
+  VertexMap identityPermutation;
 
   SampleGraph() {
     enum nodes { A, B, C, D, E, n };
@@ -31,16 +32,25 @@ public:
   }
 
   void SetUp() {
-    colorVec = std::vector<VerticesSizeType>(boost::num_vertices(graph));
+    colorVec = std::vector<ColorType>(boost::num_vertices(graph));
+    boost::tie(indexVec_front, indexVec_back) = boost::vertices(graph);
     coloring = ColorMap(&colorVec.front(), get(vertex_index, graph));
+    identityPermutation = VertexMap(&indexVec_front, get(vertex_index, graph));
   }
 
 private:
-  std::vector<VerticesSizeType> colorVec;
+  std::vector<ColorType> colorVec;
+  std::vector<VerticesSizeType> indexVec_front;
+  std::vector<VerticesSizeType> indexVec_back;
 };
 
 TEST_F(SampleGraph, GreedyColoring) {
-  VerticesSizeType numColors = greedyColoring(graph, coloring);
+  ColorType numColors = greedyColoring(graph, coloring);
+  EXPECT_EQ(numColors, 3);
+}
+
+TEST_F(SampleGraph, SequencedGreedyColoring) {
+  ColorType numColors = sequenceDependentGreedyColoring(graph, coloring, );
   EXPECT_EQ(numColors, 3);
 }
 

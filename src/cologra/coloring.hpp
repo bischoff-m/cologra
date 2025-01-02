@@ -16,7 +16,7 @@
  * @param coloring This map will be filled with the coloring
  * @return Number of colors used
  */
-VerticesSizeType greedyColoring(Graph graph, ColorMap coloring);
+ColorType greedyColoring(Graph graph, ColorMap coloring);
 /**
  * Greedy sequential coloring
  *
@@ -32,7 +32,7 @@ VerticesSizeType greedyColoring(Graph graph, ColorMap coloring);
  * @param indices This Map contains the sequence in which to color the nodes
  * @return Number of colors used
  */
-VerticesSizeType sequenceDependentGreedyColoring(Graph graph, ColorMap coloring, VertexIndexMap indices);
+ColorType sequenceDependentGreedyColoring(Graph graph, ColorMap coloring, VertexIndexMap indices);
 
 /**
  * Greedy sequential coloring
@@ -51,7 +51,7 @@ VerticesSizeType sequenceDependentGreedyColoring(Graph graph, ColorMap coloring,
  * @param index_iterators This vector of maps contains the sequences according to which to color the nodes
  * @return Number of colors used in that minimum
  */
-VerticesSizeType parallelGreedyColoring(Graph graph, ColorMap coloring, std::vector<VertexIndexMap> index_iterators);
+ColorType parallelGreedyColoring(Graph graph, ColorMap coloring, std::vector<VertexIndexMap> index_iterators);
 
 /**
  * Check if the given coloring is a valid distance-1 coloring.
