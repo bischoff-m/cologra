@@ -6,10 +6,10 @@
 #include <vector>
 
 using namespace std;
-using json = nlohmann::json;
 
 BasicSequential::BasicSequential()
-    : ColoringAlgorithm(json(), AlgorithmId("BasicSequential", "1.0")) {}
+    : ColoringAlgorithm(
+          nlohmann::json(), AlgorithmId("BasicSequential", "1.0")) {}
 
 VerticesSizeType BasicSequential::computeColoring(
     Graph graph, ColorMap coloring) {
