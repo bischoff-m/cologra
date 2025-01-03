@@ -1,14 +1,9 @@
 #include "ColoringAlgorithm.hpp"
 #include <fmt/core.h>
-#include <iostream>
 #include <regex>
 #include <stdexcept>
 
 AlgorithmId::AlgorithmId(string name, string versionCode) {
-  // Print parameters
-  cout << "Name: " << name << endl;
-  cout << "Version code: " << versionCode << endl;
-
   // Check if name follows convention
   regex pattern("^([A-Z][a-z0-9]+)((\\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$");
   if (!regex_match(name, pattern)) {

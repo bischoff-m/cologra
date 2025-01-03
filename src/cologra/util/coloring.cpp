@@ -1,6 +1,5 @@
-#include "../definitions.hpp"
+#include "coloring.hpp"
 #include <boost/graph/adjacency_list.hpp>
-#include <iostream>
 
 bool isDistance1Coloring(Graph graph, ColorMap coloring) {
   for (auto node : boost::make_iterator_range(boost::vertices(graph))) {

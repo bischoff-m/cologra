@@ -1,5 +1,4 @@
-#include "../definitions.hpp"
-#include <Eigen/SparseCore>
+#include "matrixToGraph.hpp"
 #include <boost/graph/adjacency_list.hpp>
 
 Graph columnIntersectionGraph(const Eigen::SparseMatrix<double> &matrix) {
