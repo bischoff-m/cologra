@@ -2,7 +2,8 @@
   "dependencies": [
     "boost-graph",
     "eigen3",
+    "fmt",
     "gtest",
-    "fmt"
+    "nlohmann-json"
   ]
 }

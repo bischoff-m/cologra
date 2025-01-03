@@ -1,11 +1,12 @@
 #include <Eigen/SparseCore>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/sequential_vertex_coloring.hpp>
-#include <cologra/coloring.hpp>
+#include <cologra/algorithms/BasicSequential.hpp>
 #include <cologra/definitions.hpp>
-#include <cologra/display.hpp>
-#include <cologra/matrixIO.hpp>
-#include <cologra/matrixToGraph.hpp>
+#include <cologra/util/coloring.hpp>
+#include <cologra/util/display.hpp>
+#include <cologra/util/matrixIO.hpp>
+#include <cologra/util/matrixToGraph.hpp>
 #include <filesystem>
 #include <gtest/gtest.h>
 #include <vector>
@@ -40,13 +41,15 @@ private:
 };
 
 TEST_F(SampleGraph, GreedyColoring) {
-  VerticesSizeType numColors = greedyColoring(graph, coloring);
+  ColoringAlgorithm *algorithm = new BasicSequential();
+  VerticesSizeType numColors = algorithm->computeColoring(graph, coloring);
   EXPECT_EQ(numColors, 3);
 }
 
 TEST_F(SampleGraph, IsDistance1Coloring) {
   EXPECT_FALSE(isDistance1Coloring(graph, coloring));
-  greedyColoring(graph, coloring);
+  ColoringAlgorithm *algorithm = new BasicSequential();
+  algorithm->computeColoring(graph, coloring);
   EXPECT_TRUE(isDistance1Coloring(graph, coloring));
 }
 

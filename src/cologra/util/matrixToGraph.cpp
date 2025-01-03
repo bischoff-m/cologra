@@ -1,4 +1,4 @@
-#include "definitions.hpp"
+#include "../definitions.hpp"
 #include <Eigen/SparseCore>
 #include <boost/graph/adjacency_list.hpp>
 

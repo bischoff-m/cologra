@@ -1,17 +1,18 @@
-#include "definitions.hpp"
+#include "BasicSequential.hpp"
 #include <Eigen/SparseCore>
 #include <algorithm>
 #include <boost/graph/adjacency_list.hpp>
-#include <fast_matrix_market/app/Eigen.hpp>
-#include <fstream>
-#include <iostream>
-#include <stdio.h>
-#include <string>
+#include <nlohmann/json.hpp>
 #include <vector>
 
 using namespace std;
+using json = nlohmann::json;
 
-VerticesSizeType greedyColoring(Graph graph, ColorMap coloring) {
+BasicSequential::BasicSequential()
+    : ColoringAlgorithm(json(), AlgorithmId("BasicSequential", "1.0")) {}
+
+VerticesSizeType BasicSequential::computeColoring(
+    Graph graph, ColorMap coloring) {
   // Set all entries in the coloring to -1
   for (auto node : boost::make_iterator_range(boost::vertices(graph)))
     boost::put(coloring, node, -1);
@@ -38,19 +39,4 @@ VerticesSizeType greedyColoring(Graph graph, ColorMap coloring) {
     numColors = max(numColors, color + 1);
   }
   return numColors;
-}
-
-bool isDistance1Coloring(Graph graph, ColorMap coloring) {
-  for (auto node : boost::make_iterator_range(boost::vertices(graph))) {
-    auto neighbors = boost::adjacent_vertices(node, graph);
-    for (auto neighbor : boost::make_iterator_range(neighbors)) {
-      // Skip self-loops
-      if (node == neighbor)
-        continue;
-      // Check if the node and its neighbor have the same color
-      if (boost::get(coloring, node) == boost::get(coloring, neighbor))
-        return false;
-    }
-  }
-  return true;
 }
