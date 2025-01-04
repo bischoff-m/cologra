@@ -3,6 +3,9 @@
 #include "../ColoringAlgorithm.hpp"
 #include "../definitions.hpp"
 
+#include <queue>
+#include <functional>
+
 /**
  * Most basic implementation of the sequential graph coloring algorithm.
  *
@@ -17,4 +20,6 @@ class BasicSequential : public ColoringAlgorithm {
 public:
   BasicSequential();
   VerticesSizeType computeColoring(Graph graph, ColorMap coloring) override;
+
+  VerticesSizeType greedyColorOrdered(Graph graph, ColorMap coloring, std::priority_queue<int, std::vector<int>, std::function<bool(int, int)>> order);
 };
