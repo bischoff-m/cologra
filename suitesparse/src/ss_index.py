@@ -99,8 +99,8 @@ def index_available() -> pd.DataFrame:
         dfs.append(df_fmt)
     df = pd.concat(dfs, ignore_index=True)
 
-    # Set index as ID column
-    df["id"] = df.index
+    # Set ID column to "format/group/name"
+    df["id"] = df["format"] + "/" + df["group"] + "/" + df["name"]
 
     # Add column with local file path
     df["filepath"] = [

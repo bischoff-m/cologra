@@ -4,6 +4,7 @@
     "eigen3",
     "fmt",
     "gtest",
-    "nlohmann-json"
+    "nlohmann-json",
+    "indicators"
   ]
 }

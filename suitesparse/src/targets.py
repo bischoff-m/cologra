@@ -30,7 +30,7 @@ You can get the DataFrame by calling index_available().
  11  kind        8712 non-null   object
  12  nentries    8712 non-null   int64
  13  format      8712 non-null   object
- 14  id          8712 non-null   int64
+ 14  id          8712 non-null   object
  15  filepath    8712 non-null   object
  16  downloaded  8712 non-null   bool
  17  url         8712 non-null   object
