@@ -1,8 +1,8 @@
-#include "cologra/coloring.hpp"
+#include "cologra/algorithms/BasicSequential.hpp"
 #include "cologra/definitions.hpp"
-#include "cologra/display.hpp"
-#include "cologra/matrixIO.hpp"
-#include "cologra/matrixToGraph.hpp"
+#include "cologra/util/display.hpp"
+#include "cologra/util/matrixIO.hpp"
+#include "cologra/util/matrixToGraph.hpp"
 #include <Eigen/SparseCore>
 #include <boost/graph/adjacency_list.hpp>
 #include <filesystem>
@@ -18,7 +18,8 @@ int main(int argc, char **argv) {
   vector<VerticesSizeType> colorVec(boost::num_vertices(graph));
   ColorMap coloring(&colorVec.front(), get(vertex_index, graph));
 
-  VerticesSizeType numColors = greedyColoring(graph, coloring);
+  ColoringAlgorithm *algorithm = new BasicSequential();
+  VerticesSizeType numColors = algorithm->computeColoring(graph, coloring);
   printf("Number of colors used: %ld\n", numColors);
 
   filesystem::path file("data/graph.dot");
