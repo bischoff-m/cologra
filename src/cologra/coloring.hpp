@@ -1,6 +1,8 @@
 #pragma once
 
 #include "definitions.hpp"
+#include <queue>
+#include <functional>
 
 /**
  * Greedy sequential coloring
@@ -17,6 +19,8 @@
  * @return Number of colors used
  */
 VerticesSizeType greedyColoring(Graph graph, ColorMap coloring);
+
+VerticesSizeType greedyColorOrdered(Graph graph, ColorMap coloring, std::priority_queue<int, std::vector<int>, std::function<bool(int, int)>> order);
 
 /**
  * Check if the given coloring is a valid distance-1 coloring.
