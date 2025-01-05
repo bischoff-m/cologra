@@ -15,11 +15,11 @@ int main(int argc, char **argv) {
   Eigen::SparseMatrix<double> matrix = readMatrixMarket(path);
   Graph graph = columnIntersectionGraph(matrix);
 
-  vector<VerticesSizeType> colorVec(boost::num_vertices(graph));
+  vector<ColorType> colorVec(boost::num_vertices(graph));
   ColorMap coloring(&colorVec.front(), get(vertex_index, graph));
 
   ColoringAlgorithm *algorithm = new BasicSequential();
-  VerticesSizeType numColors = algorithm->computeColoring(graph, coloring);
+  ColorType numColors = algorithm->computeColoring(graph, coloring);
   printf("Number of colors used: %ld\n", numColors);
 
   filesystem::path file("data/graph.dot");

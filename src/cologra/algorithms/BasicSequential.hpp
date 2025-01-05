@@ -19,7 +19,7 @@
 class BasicSequential : public ColoringAlgorithm {
 public:
   BasicSequential();
-  VerticesSizeType computeColoring(Graph graph, ColorMap coloring) override;
+  ColorType computeColoring(Graph graph, ColorMap coloring) override;
 
-  VerticesSizeType greedyColorOrdered(Graph graph, ColorMap coloring, std::priority_queue<int, std::vector<int>, std::function<bool(int, int)>> order);
+  ColorType greedyColorOrdered(Graph graph, ColorMap coloring, std::priority_queue<DegreeType, std::vector<VertexType>, std::function<bool(VertexType, VertexType)>> order);
 };

@@ -39,6 +39,6 @@ public:
    * @param coloring This map will be filled with the coloring
    * @return Number of colors used
    */
-  virtual VerticesSizeType computeColoring(Graph graph, ColorMap coloring) = 0;
+  virtual ColorType computeColoring(Graph graph, ColorMap coloring) = 0;
   virtual ~ColoringAlgorithm() = default;
 };

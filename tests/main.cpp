@@ -32,17 +32,17 @@ public:
   }
 
   void SetUp() {
-    colorVec = std::vector<VerticesSizeType>(boost::num_vertices(graph));
+    colorVec = std::vector<ColorType>(boost::num_vertices(graph));
     coloring = ColorMap(&colorVec.front(), get(vertex_index, graph));
   }
 
 private:
-  std::vector<VerticesSizeType> colorVec;
+  std::vector<ColorType> colorVec;
 };
 
 TEST_F(SampleGraph, GreedyColoring) {
   ColoringAlgorithm *algorithm = new BasicSequential();
-  VerticesSizeType numColors = algorithm->computeColoring(graph, coloring);
+  ColorType numColors = algorithm->computeColoring(graph, coloring);
   EXPECT_EQ(numColors, 3);
 }
 

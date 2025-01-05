@@ -14,5 +14,5 @@
 class BoostSequential : public ColoringAlgorithm {
 public:
   BoostSequential();
-  VerticesSizeType computeColoring(Graph graph, ColorMap coloring) override;
+  ColorType computeColoring(Graph graph, ColorMap coloring) override;
 };
