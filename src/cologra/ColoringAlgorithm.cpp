@@ -23,6 +23,10 @@ AlgorithmId::AlgorithmId(string name, string versionCode) {
   this->versionCode = versionCode;
 }
 
+string AlgorithmId::toString() const {
+  return fmt::format("{}@{}", name, versionCode);
+}
+
 // Definition for ColoringAlgorithm constructors
 ColoringAlgorithm::ColoringAlgorithm(
     const json &params, AlgorithmId algorithmId)
@@ -32,5 +36,7 @@ ColoringAlgorithm::ColoringAlgorithm(
     const json &params, AlgorithmId algorithmId, AlgorithmId forkFrom)
     : parameters(params), algorithmId(std::move(algorithmId)),
       forkFrom(std::move(forkFrom)) {}
+
+string ColoringAlgorithm::getId() const { return algorithmId.toString(); }
 
 json ColoringAlgorithm::getParameters() const { return parameters; }

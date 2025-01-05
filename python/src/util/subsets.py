@@ -1,5 +1,5 @@
 import pandas as pd
-from definitions import Paths
+from util.definitions import Paths
 
 subset_functions = dict()
 

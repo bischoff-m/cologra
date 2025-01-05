@@ -3,7 +3,7 @@ from datetime import datetime
 from urllib.request import urlopen
 
 import pandas as pd
-from definitions import MatrixFormats, Paths
+from util.definitions import MatrixFormats, Paths
 
 SS_URL_BASE = "https://sparse.tamu.edu"
 SS_URL_STATS = f"{SS_URL_BASE}/files/ssstats.csv"

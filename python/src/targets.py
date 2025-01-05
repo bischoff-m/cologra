@@ -41,15 +41,16 @@ https://sparse.tamu.edu/statistics
 """
 
 import pandas as pd
-from definitions import MatrixFormats
-from ss_index import index_available
-from subsets import subset
+from util.definitions import MatrixFormats
+from util.ss_index import index_available
+from util.subsets import subset
 
 
 @subset("small_mtx")
 def subset_small_mtx(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["format"] == MatrixFormats.MATRIX_MARKET.value]
-    df = df[df["nnz"] < 1e5]
+    df = df[df["nnz"] < 1e4]
+    df = df[df["isReal"]]
     return df.sample(n=100, random_state=42)
 
 

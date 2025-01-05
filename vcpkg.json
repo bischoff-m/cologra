@@ -1,10 +1,12 @@
 {
   "dependencies": [
     "boost-graph",
+    "boost-stacktrace",
     "eigen3",
     "fmt",
     "gtest",
+    "indicators",
     "nlohmann-json",
-    "indicators"
+    "lfreist-hwinfo"
   ]
 }
