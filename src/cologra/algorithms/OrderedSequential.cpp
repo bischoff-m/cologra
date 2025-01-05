@@ -1,25 +1,21 @@
-#include "BasicSequential.hpp"
-#include <Eigen/SparseCore>
-#include <algorithm>
-#include <boost/graph/adjacency_list.hpp>
-#include <nlohmann/json.hpp>
-#include <vector>
+#include "OrderedSequential.hpp"
+#include <functional>
+#include <iostream>
+#include <queue>
 
 using namespace std;
 
-BasicSequential::BasicSequential()
-    : ColoringAlgorithm(
-          nlohmann::json(), AlgorithmId("BasicSequential", "1.0")) {}
-
-VerticesSizeType BasicSequential::computeColoring(
-    Graph graph, ColorMap coloring) {
+VerticesSizeType greedyColorOrdered(
+    Graph graph, ColorMap coloring, HeuristicQueue order) {
   // Set all entries in the coloring to -1
   for (auto node : boost::make_iterator_range(boost::vertices(graph)))
     boost::put(coloring, node, -1);
 
   // Iterate over all nodes
   VerticesSizeType numColors = 0;
-  for (auto node : boost::make_iterator_range(boost::vertices(graph))) {
+  while (!order.empty()) {
+    auto node = order.top();
+    order.pop();
     // Get the neighbors of the node
     auto neighbors = boost::adjacent_vertices(node, graph);
 
@@ -39,4 +35,19 @@ VerticesSizeType BasicSequential::computeColoring(
     numColors = max(numColors, color + 1);
   }
   return numColors;
+}
+
+OrderedSequential::OrderedSequential(const nlohmann::json &params)
+    : ColoringAlgorithm(params, AlgorithmId("OrderedSequential", "1.0")) {
+  if (!params.contains("heuristic"))
+    throw invalid_argument("Missing heuristic parameter");
+  if (!Heuristic::isHeuristic(params["heuristic"]))
+    throw invalid_argument("Invalid heuristic parameter");
+  heuristicId = params["heuristic"];
+}
+
+VerticesSizeType OrderedSequential::computeColoring(
+    Graph graph, ColorMap coloring) {
+  auto heuristic = Heuristic::fromId(heuristicId, graph);
+  return greedyColorOrdered(graph, coloring, heuristic);
 }
