@@ -13,6 +13,8 @@ struct AlgorithmId {
   string versionCode;
 
   AlgorithmId(string name, string versionCode);
+
+  string toString() const;
 };
 
 class ColoringAlgorithm {
@@ -25,7 +27,9 @@ public:
   ColoringAlgorithm(const json &params, AlgorithmId algorithmId);
   ColoringAlgorithm(
       const json &params, AlgorithmId algorithmId, AlgorithmId forkFrom);
+  ~ColoringAlgorithm() = default;
 
+  string getId() const;
   json getParameters() const;
 
   /**
@@ -40,5 +44,4 @@ public:
    * @return Number of colors used
    */
   virtual VerticesSizeType computeColoring(Graph graph, ColorMap coloring) = 0;
-  virtual ~ColoringAlgorithm() = default;
 };

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(cologra CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 
@@ -28,8 +28,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fast_matrix_market)
 
-# Boost Graph Library
-find_package(Boost REQUIRED COMPONENTS graph)
+# Boost Library
+find_package(boost_graph REQUIRED COMPONENTS)
+find_package(boost_stacktrace_basic CONFIG REQUIRED)
+
+# Hwinfo
+find_package(lfreist-hwinfo REQUIRED)
 
 # Source files
 add_subdirectory(src)

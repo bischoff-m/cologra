@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 class Paths:
-    data = Path(__file__).parent.parent / "data"
+    data = Path(__file__).parent.parent.parent.parent / "shared"
     matrices = data / "matrices"
     subsets = data / "subsets"
 

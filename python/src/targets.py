@@ -30,7 +30,7 @@ You can get the DataFrame by calling index_available().
  11  kind        8712 non-null   object
  12  nentries    8712 non-null   int64
  13  format      8712 non-null   object
- 14  id          8712 non-null   int64
+ 14  id          8712 non-null   object
  15  filepath    8712 non-null   object
  16  downloaded  8712 non-null   bool
  17  url         8712 non-null   object
@@ -41,15 +41,16 @@ https://sparse.tamu.edu/statistics
 """
 
 import pandas as pd
-from definitions import MatrixFormats
-from ss_index import index_available
-from subsets import subset
+from util.definitions import MatrixFormats
+from util.ss_index import index_available
+from util.subsets import subset
 
 
 @subset("small_mtx")
 def subset_small_mtx(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["format"] == MatrixFormats.MATRIX_MARKET.value]
-    df = df[df["nnz"] < 1e5]
+    df = df[df["nnz"] < 1e4]
+    df = df[df["isReal"]]
     return df.sample(n=100, random_state=42)
 
 
