@@ -11,6 +11,8 @@ ColoringAlgorithm *createAlgorithm(string id, json params) {
     return new BoostSequential();
   } else if (id == "OrderedSequential") {
     return new OrderedSequential(params);
+  } else if (id == "BasicParallel") {
+    return new BasicParallel(params);
   } else {
     throw invalid_argument(fmt::format("Algorithm {} not found", id));
   }
@@ -18,7 +20,7 @@ ColoringAlgorithm *createAlgorithm(string id, json params) {
 
 void runBenchmark() {
   vector<BenchmarkTarget> targets = {{{"small_mtx"},
-      {"BasicSequential", "BoostSequential", "OrderedSequential"},
+      {"BasicSequential", "BoostSequential", "OrderedSequential", "BasicParallel"},
       {{"heuristic", "maxDegreeFirst"}}}};
 
   Benchmark benchmark(targets);
