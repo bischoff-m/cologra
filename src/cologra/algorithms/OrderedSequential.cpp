@@ -6,16 +6,18 @@
 using namespace std;
 
 VerticesSizeType greedyColorOrdered(
-    Graph graph, ColorMap coloring, HeuristicQueue order) {
+    Graph graph, ColorMap coloring, HeuristicOrder order) {
   // Set all entries in the coloring to -1
   for (auto node : boost::make_iterator_range(boost::vertices(graph)))
     boost::put(coloring, node, -1);
 
+  int current_node = 0;
+
   // Iterate over all nodes
   VerticesSizeType numColors = 0;
-  while (!order.empty()) {
-    auto node = order.top();
-    order.pop();
+  while (current_node < order.size()) {
+    auto node = order.at(current_node);
+    current_node++;
     // Get the neighbors of the node
     auto neighbors = boost::adjacent_vertices(node, graph);
 

@@ -3,15 +3,15 @@
 #include "definitions.hpp"
 #include <functional>
 #include <queue>
+#include <vector>
 #include <string>
 
-typedef std::
-    priority_queue<int, std::vector<int>, std::function<bool(int, int)>>
-        HeuristicQueue;
+typedef std::vector<int> HeuristicOrder;
 
 struct Heuristic {
-  static HeuristicQueue minDegreeFirst(Graph graph);
-  static HeuristicQueue maxDegreeFirst(Graph graph);
-  static HeuristicQueue fromId(std::string id, Graph graph);
   static bool isHeuristic(std::string id);
+
+  static HeuristicOrder fromId(std::string id, const Graph &graph);
+  static HeuristicOrder minDegreeFirst(const Graph &graph);
+  static HeuristicOrder maxDegreeFirst(const Graph &graph);
 };

@@ -1,6 +1,8 @@
 #include "Heuristic.hpp"
 
-HeuristicQueue Heuristic::fromId(std::string id, Graph graph) {
+#include <algorithm>
+
+HeuristicOrder Heuristic::fromId(std::string id, const Graph &graph) {
   if (id == "minDegreeFirst") {
     return minDegreeFirst(graph);
   } else if (id == "maxDegreeFirst") {
@@ -10,30 +12,35 @@ HeuristicQueue Heuristic::fromId(std::string id, Graph graph) {
   }
 };
 
+HeuristicOrder Heuristic::minDegreeFirst(const Graph &graph) {
+  std::vector<int> order;
+  order.reserve(graph.m_vertices.size());
+  for (auto node : boost::make_iterator_range(boost::vertices(graph))) {
+      order.push_back(node);
+  }
+
+  std::sort(order.begin(), order.end(), [&graph](int a, int b) {
+    return degree(a, graph) < degree(b, graph);
+  });
+
+  return order;
+}
+
+HeuristicOrder Heuristic::maxDegreeFirst(const Graph &graph) {
+  std::vector<int> order;
+  order.reserve(graph.m_vertices.size());
+  for (auto node : boost::make_iterator_range(boost::vertices(graph))) {
+      order.push_back(node);
+  }
+
+  std::sort(order.begin(), order.end(), [&graph](int a, int b) {
+    return degree(a, graph) > degree(b, graph);
+  });
+
+  return order;
+}
+
+
 bool Heuristic::isHeuristic(std::string id) {
   return id == "minDegreeFirst" || id == "maxDegreeFirst";
-};
-
-HeuristicQueue Heuristic::minDegreeFirst(Graph graph) {
-  auto min_degree = [&graph](int a, int b) {
-    return degree(a, graph) > degree(b, graph);
-  };
-
-  HeuristicQueue q(min_degree);
-  for (auto node : boost::make_iterator_range(boost::vertices(graph))) {
-    q.emplace(node);
-  }
-  return q;
-};
-
-HeuristicQueue Heuristic::maxDegreeFirst(Graph graph) {
-  auto max_degree = [&graph](int a, int b) {
-    return degree(a, graph) < degree(b, graph);
-  };
-
-  HeuristicQueue q(max_degree);
-  for (auto node : boost::make_iterator_range(boost::vertices(graph))) {
-    q.emplace(node);
-  }
-  return q;
 };
