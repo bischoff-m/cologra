@@ -3,18 +3,22 @@ project(cologra CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+#set(GCC_COVERAGE_COMPILE_FLAGS "-Wall -pedantic -lm -O3 -funroll-loops -fopenmp")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+#set(OpenMP_CXX_FLAGS "${OpenMP_CXX_FLAGS} -fopenmp")
+#set(OpenMP_CXX_LIB_NAMES "${OpenMP_CXX_LIB_NAMES}" "")
 
 # -fopenmp flag (enables OpenMP)
 # set(GCC_COVERAGE_COMPILE_FLAGS "-Wall -pedantic -lm -O3 -funroll-loops -fopenmp")
-
+# find_package(OpenMP REQUIRED)
+#target_link_libraries(cologra PUBLIC OpenMP::OpenMP_CXX)
 
 # fmt
 find_package(fmt CONFIG REQUIRED)
 
 # MPI
 find_package(MPI REQUIRED)
-
+#target_link_libraries(cologra PUBLIC MPI::MPI_CXX)
 # Eigen3
 find_package(Eigen3 CONFIG REQUIRED)
 

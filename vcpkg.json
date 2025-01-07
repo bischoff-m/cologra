@@ -7,6 +7,8 @@
     "gtest",
     "indicators",
     "nlohmann-json",
-    "lfreist-hwinfo"
+    "lfreist-hwinfo",
+    "openmpi",
+    "boost-iterator"
   ]
 }

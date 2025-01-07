@@ -17,7 +17,9 @@
  * https://doi.org/10.1137/S0036144504444711.
  */
 class BasicParallel : public ColoringAlgorithm {
+private:
+  std::vector<string> heuristicIds;
 public:
-  BasicParallel();
+  BasicParallel(const nlohmann::json &params);
   VerticesSizeType computeColoring(Graph graph, ColorMap coloring) override;
 };

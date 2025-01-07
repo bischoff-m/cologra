@@ -1,6 +1,7 @@
 #include "../cologra/algorithms/BasicSequential.hpp"
 #include "../cologra/algorithms/BoostSequential.hpp"
 #include "../cologra/algorithms/OrderedSequential.hpp"
+#include "../cologra/algorithms/BasicParallel.hpp"
 #include "Benchmark.hpp"
 #include <fmt/core.h>
 
@@ -21,7 +22,10 @@ ColoringAlgorithm *createAlgorithm(string id, json params) {
 void runBenchmark() {
   vector<BenchmarkTarget> targets = {{{"small_mtx"},
       {"BasicSequential", "BoostSequential", "OrderedSequential", "BasicParallel"},
-      {{"heuristic", "maxDegreeFirst"}}}};
+      {{"heuristic", "maxDegreeFirst"}}}, 
+      {{"small_mtx"},
+      {"BasicParallel"},
+      {{"heuristics", {"maxDegreeFirst", "minDegreeFirst", "identity"}}}}};
 
   Benchmark benchmark(targets);
   benchmark.measure(createAlgorithm);
