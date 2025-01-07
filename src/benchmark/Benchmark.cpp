@@ -34,6 +34,7 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
     for (const auto &datasetId : target.datasetIds) {
       auto dataset = loader.getDataset(datasetId);
       for (const auto &algorithmId : target.algorithmIds) {
+        cout << "Running " << algorithmId << " on " << datasetId << endl;
         auto algorithm = getAlgorithm(algorithmId, target.parameters);
 
         BenchmarkResult benchmarkResult;

@@ -1,7 +1,7 @@
+#include "../cologra/algorithms/BasicParallel.hpp"
 #include "../cologra/algorithms/BasicSequential.hpp"
 #include "../cologra/algorithms/BoostSequential.hpp"
 #include "../cologra/algorithms/OrderedSequential.hpp"
-#include "../cologra/algorithms/BasicParallel.hpp"
 #include "Benchmark.hpp"
 #include <fmt/core.h>
 
@@ -13,19 +13,23 @@ ColoringAlgorithm *createAlgorithm(string id, json params) {
   } else if (id == "OrderedSequential") {
     return new OrderedSequential(params);
   } else if (id == "BasicParallel") {
-    return new BasicParallel(params);
+    return new BasicParallel();
   } else {
     throw invalid_argument(fmt::format("Algorithm {} not found", id));
   }
 }
 
 void runBenchmark() {
-  vector<BenchmarkTarget> targets = {{{"small_mtx"},
-      {"BasicSequential", "BoostSequential", "OrderedSequential", "BasicParallel"},
-      {{"heuristic", "maxDegreeFirst"}}}, 
+  json params = {{"heuristic", "maxDegreeFirst"}};
+
+  vector<BenchmarkTarget> targets = {
       {{"small_mtx"},
-      {"BasicParallel"},
-      {{"heuristics", {"maxDegreeFirst", "minDegreeFirst", "identity"}}}}};
+          {"BasicSequential",
+              "BoostSequential",
+              "OrderedSequential",
+              "BasicParallel"},
+          params},
+  };
 
   Benchmark benchmark(targets);
   benchmark.measure(createAlgorithm);
