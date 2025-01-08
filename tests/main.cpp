@@ -83,6 +83,46 @@ TEST(MatrixToGraph, ColumnIntersectionGraph) {
   EXPECT_EQ(boost::num_edges(graph), 2);
 }
 
+TEST(MatrixToGraph, AdjacencyGraph) {
+
+  // 0 1 0 1
+  // 1 0 0 0
+  // 0 0 0 0
+  // 1 0 0 0
+
+  Eigen::SparseMatrix<double> mat(4, 4);
+  mat.insert(0, 1) = 1;
+  mat.insert(1, 0) = 1;
+  mat.insert(3, 0) = 1;
+  mat.insert(0, 3) = 1;
+
+  Graph graph = adjacencyGraph(mat);
+  EXPECT_EQ(boost::num_vertices(graph), 4);
+  EXPECT_EQ(boost::num_edges(graph), 2);
+}
+
+TEST(MatrixToGraph, AdjacencyGraph2) {
+
+  // 0 1 0 1
+  // 1 0 1 0
+  // 0 1 0 1
+  // 1 0 1 0
+
+  Eigen::SparseMatrix<double> mat(4, 4);
+  mat.insert(0, 1) = 1;
+  mat.insert(1, 0) = 1;
+  mat.insert(3, 0) = 1;
+  mat.insert(0, 3) = 1;
+  mat.insert(2, 1) = 1;
+  mat.insert(1, 2) = 1;
+  mat.insert(3, 2) = 1;
+  mat.insert(2, 3) = 1;
+
+  Graph graph = adjacencyGraph(mat);
+  EXPECT_EQ(boost::num_vertices(graph), 4);
+  EXPECT_EQ(boost::num_edges(graph), 4);
+}
+
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

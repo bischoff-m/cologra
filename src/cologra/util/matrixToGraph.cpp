@@ -24,3 +24,19 @@ Graph columnIntersectionGraph(const Eigen::SparseMatrix<double> &matrix) {
 
   return graph;
 }
+
+
+Graph adjacencyGraph(const Eigen::SparseMatrix<double> &matrix) {
+  int numCols = matrix.cols();
+  Graph graph(numCols);
+
+  for (int k = 0; k < matrix.outerSize(); ++k) {
+    for (Eigen::SparseMatrix<double>::InnerIterator it(matrix, k); it; ++it) {
+      if( ! boost::edge(it.row(), it.col(), graph).second) {
+      boost::add_edge(it.row(), it.col(), graph);
+      }
+    }
+  }
+
+  return graph;
+}
