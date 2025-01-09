@@ -9,6 +9,7 @@
 class RandomPermutationQueue : public ColoringAlgorithm {
 private:
   std::string heuristicId;
+  int numPermutations;
 
 public:
   RandomPermutationQueue(const nlohmann::json &params);

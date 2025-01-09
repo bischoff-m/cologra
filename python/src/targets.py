@@ -60,6 +60,14 @@ def subset_small_mtx(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["isReal"]]
     return df.sample(n=3, random_state=42)
 
+@subset("for_testing")
+def subset_for_testing(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df["format"] == MatrixFormats.MATRIX_MARKET.value]
+    df = df[df["group"] == "AG-Monien"]
+    df = df[df["name"] == "netz4504"]
+    assert len(df) == 1
+    return df
+
 
 if __name__ == "__main__":
     df = index_available()

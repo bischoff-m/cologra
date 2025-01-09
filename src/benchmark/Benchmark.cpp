@@ -1,6 +1,7 @@
 #include "Benchmark.hpp"
 #include "BenchmarkResult.hpp"
 #include "CaptureLog.hpp"
+#include "ProgressBarIterator.hpp"
 #include <boost/mpi.hpp>
 #include <boost/mpi/communicator.hpp>
 #include <boost/stacktrace.hpp>
@@ -38,6 +39,7 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
   }
 
   for (const auto &target : targets) {
+    vector<BenchmarkResult> results;
     for (const auto &algorithmId : target.algorithmIds) {
       auto algorithm = getAlgorithm(algorithmId, target.parameters);
       if (world.rank() != 0) {
@@ -45,6 +47,7 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
         continue;
       }
       for (const auto &datasetId : target.datasetIds) {
+        cout << "Running " << algorithmId << " on " << datasetId << endl;
         auto dataset = loader.getDataset(datasetId);
 
         BenchmarkResult benchmarkResult;
@@ -59,14 +62,16 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
         int64_t totalDuration = 0;
         int64_t totalNumColors = 0;
 
-        for (const auto &[matrixId, graph] : dataset) {
-          cout << "Running " << algorithmId << " on " << matrixId << endl;
+        ProgressBarIterator<Graph> progressBar(dataset.begin(), dataset.end());
+        while (progressBar.begin() != progressBar.end()) {
+          auto &[matrixId, graph] = progressBar.next();
           vector<VerticesSizeType> colorVec(boost::num_vertices(graph));
           ColorMap coloring(&colorVec.front(), get(vertex_index, graph));
           VerticesSizeType numColors = 0;
           int64_t duration = 0;
           bool didFail = false;
 
+          // TODO: Fix capture log when running in parallel
           // CaptureLog *rd = new CaptureLog();
           try {
             auto t1 = high_resolution_clock::now();
@@ -87,8 +92,8 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
           result.didFail = didFail;
           // result.logOut = rd->getCout();
           // result.logErr = rd->getCerr();
-          result.logOut = "Disabled for now";
-          result.logErr = "Disabled for now";
+          result.logOut = "";
+          result.logErr = "";
           benchmarkResult.results.push_back(result);
 
           // delete rd;
@@ -96,14 +101,18 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
           totalNumColors += numColors;
         }
 
-        benchmarkResult.aggregated.totalTime = totalDuration;
-        benchmarkResult.aggregated.averageTime = totalDuration / dataset.size();
+        benchmarkResult.aggregated.totalTimeNs = totalDuration;
+        benchmarkResult.aggregated.averageTimeNs =
+            totalDuration / dataset.size();
         benchmarkResult.aggregated.sumNumColors = totalNumColors;
-        benchmarkResult.writeToFile();
+        results.push_back(benchmarkResult);
       }
       if (world.rank() == 0) {
         algorithm->stopIfParallel();
       }
+    }
+    if (world.rank() == 0) {
+      BenchmarkResult::writeMultiple(results, target);
     }
   }
   if (world.rank() == 0) {

@@ -64,10 +64,10 @@ TEST_F(SampleGraph, GraphToDot) {
 }
 
 TEST(MatrixIO, ReadMatrixMarket) {
-  std::filesystem::path infile("../../data/matrix/can___24.mtx");
+  std::filesystem::path infile("../../shared/matrices/AG-Monien/netz4504.mtx");
   Eigen::SparseMatrix<double> mat = readMatrixMarket(infile);
-  EXPECT_EQ(mat.rows(), 24);
-  EXPECT_EQ(mat.cols(), 24);
+  EXPECT_EQ(mat.rows(), 1961);
+  EXPECT_EQ(mat.cols(), 1961);
 }
 
 TEST(MatrixToGraph, ColumnIntersectionGraph) {

@@ -4,6 +4,7 @@
 #include "../cologra/algorithms/OrderedSequential.hpp"
 #include "../cologra/algorithms/RandomPermutationQueue/RandomPermutationQueue.hpp"
 #include "Benchmark.hpp"
+#include "BenchmarkResult.hpp"
 #include <fmt/core.h>
 
 ColoringAlgorithm *createAlgorithm(string id, json params) {
@@ -25,18 +26,19 @@ ColoringAlgorithm *createAlgorithm(string id, json params) {
 void runBenchmark() {
   // clang-format off
   vector<string> datasetIds = {
-    // "small_mtx"
-    "small_mtx_3elements"
+    "small_mtx"
+    // "small_mtx_3elements"
   };
   vector<string> algorithmIds = {
-    // "BasicSequential",
-    // "BoostSequential",
-    // "OrderedSequential",
-    // "BasicParallel",
+    "BasicSequential",
+    "BoostSequential",
+    "OrderedSequential",
+    "BasicParallel",
     "RandomPermutationQueue"
   };
   json params = {
-    {"heuristic", "maxDegreeFirst"}
+    {"heuristic", "maxDegreeFirst"},
+    {"numPermutations", 20}
   };
   // clang-format on
 

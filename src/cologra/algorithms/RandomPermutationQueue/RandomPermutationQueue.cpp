@@ -1,4 +1,5 @@
 #include "RandomPermutationQueue.hpp"
+#include "../../Heuristic.cpp"
 #include "../../Heuristic.hpp"
 #include "../../definitions.hpp"
 // TODO: Remove before commit and fix
@@ -42,6 +43,12 @@ RandomPermutationQueue::RandomPermutationQueue(const nlohmann::json &params)
   if (!Heuristic::isHeuristic(params["heuristic"]))
     throw invalid_argument("Invalid heuristic parameter");
   heuristicId = params["heuristic"];
+
+  if (!params.contains("numPermutations"))
+    throw invalid_argument("Missing numPermutations parameter");
+  if (!params["numPermutations"].is_number_integer())
+    throw invalid_argument("numPermutations must be an integer");
+  numPermutations = params["numPermutations"];
 }
 
 vector<int> samplePermutationUniform(int size) {
@@ -92,7 +99,7 @@ VerticesSizeType RandomPermutationQueue::computeColoring(
   }
   sections.push_back({start, order.size()});
 
-  int count = 20;
+  int count = numPermutations;
   bool isDone = false;
   VerticesSizeType bestNumColors = numeric_limits<VerticesSizeType>::max();
   vector<ColorType> bestColoring;
@@ -121,10 +128,6 @@ VerticesSizeType RandomPermutationQueue::computeColoring(
                     "Node {} threw exception: {}", i + 1, results[i].exception)
              << endl;
       } else {
-        cout << fmt::format("Node {} finished with {} colors",
-                    i + 1,
-                    results[i].numColors)
-             << endl;
         if (results[i].numColors < bestNumColors) {
           bestNumColors = results[i].numColors;
           bestColoring = results[i].coloring;

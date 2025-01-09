@@ -2,10 +2,12 @@
 #include "Paths.hpp"
 #include <fmt/core.h>
 #include <fstream>
+#include <iomanip>
 #include <sstream>
 #include <string>
+#include <vector>
 
-void BenchmarkResult::writeToFile() {
+json BenchmarkResult::toJson() {
   json output;
 
   ostringstream oss;
@@ -30,21 +32,46 @@ void BenchmarkResult::writeToFile() {
       {"totalMemoryBytes", machineInfo.totalMemoryBytes},
       {"cpuNames", machineInfo.cpuNames},
       {"gpuNames", machineInfo.gpuNames}};
-  output["aggregated"] = {{"totalTime", aggregated.totalTime},
-      {"averageTime", aggregated.averageTime},
+  output["aggregated"] = {{"totalTimeNs", aggregated.totalTimeNs},
+      {"averageTimeNs", aggregated.averageTimeNs},
       {"sumNumColors", aggregated.sumNumColors}};
 
+  return output;
+}
+
+void BenchmarkResult::writeMultiple(
+    vector<BenchmarkResult> &results, const BenchmarkTarget &target) {
+  json output;
+  output["results"] = json::array();
+  for (auto &result : results) {
+    output["results"].push_back(result.toJson());
+  }
+  output["target"] = {{"datasetIds", target.datasetIds},
+      {"algorithmIds", target.algorithmIds},
+      {"parameters", target.parameters}};
+
   // Generate hash of input values
-  string inputValues =
-      fmt::format("{}{}{}", datasetId, algorithmId, parameters.dump());
-  size_t hashValue = std::hash<string>{}(inputValues);
+  string uniqueValue;
+  vector<string> datasetIds = target.datasetIds;
+  vector<string> algorithmIds = target.algorithmIds;
+  sort(datasetIds.begin(), datasetIds.end());
+  sort(algorithmIds.begin(), algorithmIds.end());
+  for (const auto &datasetId : target.datasetIds) {
+    uniqueValue += datasetId;
+  }
+  for (const auto &algorithmId : target.algorithmIds) {
+    uniqueValue += algorithmId;
+  }
+  uniqueValue += target.parameters.dump();
+  size_t hashValue = std::hash<string>{}(uniqueValue);
   stringstream hashStr;
   hashStr << hex << setw(6) << setfill('0') << (hashValue & 0xFFFFFF);
 
   // Format timestamp for filename
-  ostringstream oss2;
-  oss2 << put_time(gmtime(&timestampSec), "%Y-%m-%d_%H-%M-%S");
-  string timestamp = oss2.str();
+  time_t timestampSec = results[0].timestampMs / 1000;
+  ostringstream oss;
+  oss << put_time(gmtime(&timestampSec), "%Y-%m-%d_%H-%M-%S");
+  string timestamp = oss.str();
 
   // Create directory if it does not exist
   fs::create_directories(Paths::benchmarks);
