@@ -1,8 +1,7 @@
 #include "RandomPermutationQueue.hpp"
-#include "../../Heuristic.cpp"
 #include "../../Heuristic.hpp"
 #include "../../definitions.hpp"
-// TODO: Remove before commit and fix
+// TODO: Code breaks without this cpp include, why?
 #include "ResultOrException.cpp"
 #include "ResultOrException.hpp"
 #include <boost/graph/adj_list_serialize.hpp>
@@ -15,25 +14,15 @@
 
 using namespace boost;
 
-enum NodeState { IDLE, COMPUTING };
-
-struct ColoringJob {
-  Graph graph;
-  HeuristicOrder order;
-
-  friend class boost::serialization::access;
-  template <class Archive>
-  void serialize(Archive &ar, const unsigned int version);
+enum Message : int {
+  STOP = 0,
+  IDLE = 1,
+  GRAPH = 2,
+  RESULT = 3,
 };
 
-template <class Archive>
-void ColoringJob::serialize(Archive &ar, const unsigned int version) {
-  ar &graph;
-  ar &order;
-}
-
 RandomPermutationQueue::RandomPermutationQueue(const nlohmann::json &params)
-    : ColoringAlgorithm(params, AlgorithmId("RandomPermutationQueue", "1.0")) {
+    : ColoringAlgorithm(params, AlgorithmId("RandomPermutationQueue", "1.1")) {
   mpi::communicator world;
   if (world.size() == 1)
     throw invalid_argument("This algorithm is only for parallel execution");
@@ -81,103 +70,68 @@ VerticesSizeType RandomPermutationQueue::computeColoring(
   mpi::communicator world;
   if (world.rank() != 0) {
     throw invalid_argument("This algorithm assumes that computeColoring is "
-                           "only called on the main node");
+                           "only called on the master node");
+  }
+  // Send graph to all nodes
+  for (int i = 1; i < world.size(); i++) {
+    world.send(i, Message::GRAPH, graph);
   }
 
-  HeuristicOrder order = Heuristic::fromId(heuristicId, graph);
-  // Segment the order into sections with the same heuristic value
-  // First = start (inclusive), second = end (exclusive)
-  vector<pair<int, int>> sections;
-  int currentHeuristic = order[0].value;
-  int start = 0;
-  for (int i = 1; i < order.size(); i++) {
-    if (order[i].value == currentHeuristic)
-      continue;
-    sections.push_back({start, i});
-    start = i;
-    currentHeuristic = order[i].value;
-  }
-  sections.push_back({start, order.size()});
-
-  int count = numPermutations;
+  int count = 0;
   bool isDone = false;
   VerticesSizeType bestNumColors = numeric_limits<VerticesSizeType>::max();
   vector<ColorType> bestColoring;
-  queue<vector<VerticesSizeType>> permutationQueue;
 
-  vector<mpi::request> requests;
-  requests.reserve(world.size() - 1);
-  // No value = idle, value = result or exception
-  vector<ResultOrException> results;
-  results.reserve(world.size() - 1);
-  vector<NodeState> nodeStates(world.size() - 1, NodeState::IDLE);
+  vector<ResultOrException> results(world.size() - 1);
+  vector<mpi::request> requests(world.size() - 1);
+  vector<mpi::request> idleRequests(world.size() - 1);
+  vector<bool> isIdle(world.size() - 1, false);
 
   for (int i = 1; i < world.size(); i++) {
-    results.push_back(ResultOrException());
-    requests.push_back(world.irecv(i, 2, results[i - 1]));
+    results[i - 1] = ResultOrException();
+    requests[i - 1] = world.irecv(i, Message::RESULT, results[i - 1]);
   }
 
-  while (!isDone) {
+  auto receiveResult = [&](int i) {
+    count++;
+    if (results[i].isException()) {
+      cout << fmt::format(
+                  "Node {} threw exception: {}", i + 1, results[i].exception)
+           << endl;
+    } else {
+      if (results[i].numColors < bestNumColors) {
+        bestNumColors = results[i].numColors;
+        bestColoring = results[i].coloring;
+      }
+    }
+    results[i] = ResultOrException();
+    requests[i] = world.irecv(i + 1, Message::RESULT, results[i]);
+  };
+
+  while (!all_of(isIdle.begin(), isIdle.end(), [](bool b) { return b; })) {
     // Handle incoming messages
-    for (int i = 0; i < requests.size(); i++) {
-      if (!requests[i].test()) {
-        continue;
-      }
-      if (results[i].isException()) {
-        cout << fmt::format(
-                    "Node {} threw exception: {}", i + 1, results[i].exception)
-             << endl;
-      } else {
-        if (results[i].numColors < bestNumColors) {
-          bestNumColors = results[i].numColors;
-          bestColoring = results[i].coloring;
-        }
-      }
-      results[i] = ResultOrException();
-      requests[i] = world.irecv(i + 1, 2, results[i]);
-      nodeStates[i] = NodeState::IDLE;
-    }
+    std::pair<mpi::status, std::vector<mpi::request>::iterator> result =
+        mpi::wait_any(requests.begin(), requests.end());
 
-    // Hand out coloring tasks to idle nodes
-    for (int i = 1; i < world.size(); i++) {
-      if (permutationQueue.empty())
-        break;
-      if (nodeStates[i - 1] != NodeState::IDLE)
-        continue;
-      vector<VerticesSizeType> permutation = permutationQueue.front();
-      permutationQueue.pop();
-      nodeStates[i - 1] = NodeState::COMPUTING;
-      mpi::request sendRequest = world.isend(i, 1, ColoringJob{graph, order});
-      sendRequest.wait();
-    }
+    int i = result.second - requests.begin();
+    if (result.first.tag() != Message::RESULT)
+      throw invalid_argument("Unexpected message");
 
-    // Stop if total number of permutations is reached
-    if (count == 0) {
+    if (isDone) {
+      isIdle[i] = true;
+    }
+    receiveResult(i);
+    if (!isDone && count > numPermutations - world.size()) {
       isDone = true;
-      for (auto &state : nodeStates) {
-        if (state != NodeState::IDLE) {
-          isDone = false;
-          break;
-        }
-      }
-      continue;
-    }
-    count--;
-
-    // Generate permutation
-    vector<VerticesSizeType> permutation;
-    for (auto &section : sections) {
-      if (section.first == section.second + 1) {
-        permutation.push_back(order[section.first].node);
-        continue;
-      }
-      vector<int> sectionPerm =
-          samplePermutationUniform(section.second - section.first);
-      for (int i = 0; i < sectionPerm.size(); i++) {
-        permutation.push_back(order[section.first + sectionPerm[i]].node);
+      for (int i = 1; i < world.size(); i++) {
+        idleRequests[i - 1] = world.isend(i, Message::IDLE);
       }
     }
-    permutationQueue.push(permutation);
+  }
+  // Wait for all nodes to finish
+  mpi::wait_all(idleRequests.begin(), idleRequests.end());
+  for (auto &request : requests) {
+    request.cancel();
   }
 
   // Copy best coloring to output
@@ -191,17 +145,15 @@ void RandomPermutationQueue::stopIfParallel() {
   mpi::communicator world;
   if (world.rank() != 0)
     return;
-  string stopSignal = "stop";
   mpi::request stopRequests[world.size() - 1];
   for (int i = 1; i < world.size(); i++) {
-    stopRequests[i - 1] = world.isend(i, 0, stopSignal);
+    stopRequests[i - 1] = world.isend(i, Message::STOP);
   }
   mpi::wait_all(stopRequests, stopRequests + world.size() - 1);
 }
 
-ResultOrException computeColoringOrdered(ColoringJob request) {
-  Graph &graph = request.graph;
-  HeuristicOrder &order = request.order;
+ResultOrException computeColoringOrdered(
+    Graph graph, vector<VerticesSizeType> order) {
   if (order.size() != num_vertices(graph)) {
     return ResultOrException("Order size does not match number of vertices");
   }
@@ -209,7 +161,7 @@ ResultOrException computeColoringOrdered(ColoringJob request) {
   vector<VerticesSizeType> orderVec(boost::num_vertices(graph));
   ColorMap orderMap(&orderVec.front(), get(vertex_index, graph));
   for (int i = 0; i < order.size(); i++) {
-    orderMap[i] = order[i].node;
+    orderMap[i] = order[i];
   }
 
   try {
@@ -237,21 +189,78 @@ void RandomPermutationQueue::assistIfParallel() {
     return;
   }
 
-  string stopSignal;
-  ColoringJob job;
-  mpi::request stopRequest = world.irecv(0, 0, stopSignal);
-  mpi::request computeRequest = world.irecv(0, 1, job);
+  Graph graph;
+  Graph newGraph;
+  HeuristicOrder order;
+  vector<pair<int, int>> sections;
+  mpi::request stopRequest = world.irecv(0, Message::STOP);
+  mpi::request idleRequest = world.irecv(0, Message::IDLE);
+  mpi::request computeRequest = world.irecv(0, Message::GRAPH, newGraph);
+  vector<mpi::request> requests;
+
+  auto updateGraph = [&]() {
+    // Update graph
+    graph = newGraph;
+    newGraph = Graph();
+    computeRequest = world.irecv(0, Message::GRAPH, newGraph);
+
+    // Update sections for new graph
+    order = Heuristic::fromId(heuristicId, graph);
+    // Segment the order into sections with the same heuristic value
+    // First = start (inclusive), second = end (exclusive)
+    sections.clear();
+    int currentHeuristic = order[0].value;
+    int start = 0;
+    for (int i = 1; i < order.size(); i++) {
+      if (order[i].value == currentHeuristic)
+        continue;
+      sections.push_back({start, i});
+      start = i;
+      currentHeuristic = order[i].value;
+    }
+    sections.push_back({start, order.size()});
+  };
+
+  computeRequest.wait();
+  updateGraph();
+
   while (true) {
+    if (num_vertices(graph) == 0) {
+      throw invalid_argument("Graph is empty");
+    }
+    // Compute new permutation
+    vector<VerticesSizeType> permutation;
+    for (auto &section : sections) {
+      if (section.first == section.second + 1) {
+        permutation.push_back(order[section.first].node);
+        continue;
+      }
+      vector<int> sectionPerm =
+          samplePermutationUniform(section.second - section.first);
+      for (int i = 0; i < sectionPerm.size(); i++) {
+        permutation.push_back(order[section.first + sectionPerm[i]].node);
+      }
+    }
+
+    // Compute coloring and send result
+    ResultOrException result = computeColoringOrdered(graph, permutation);
+    mpi::request resultRequest = world.isend(0, Message::RESULT, result);
+    resultRequest.wait();
+
     if (stopRequest.test()) {
       computeRequest.cancel();
       break;
     }
-    if (computeRequest.test()) {
-      ResultOrException result = computeColoringOrdered(job);
-      job = ColoringJob();
-      computeRequest = world.irecv(0, 1, job);
-      mpi::request resultRequest = world.isend(0, 2, result);
-      resultRequest.wait();
+    if (idleRequest.test()) {
+      vector<mpi::request> waitFor = {stopRequest, computeRequest};
+      auto resultWait = mpi::wait_any(waitFor.begin(), waitFor.end());
+      if (resultWait.first.tag() == Message::GRAPH) {
+        idleRequest = world.irecv(0, Message::IDLE);
+        updateGraph();
+      } else {
+        computeRequest.cancel();
+        break;
+      }
     }
   }
 }

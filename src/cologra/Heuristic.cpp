@@ -54,9 +54,3 @@ HeuristicOrder Heuristic::maxDegreeFirst(const Graph &graph) {
 bool Heuristic::isHeuristic(string id) {
   return id == "minDegreeFirst" || id == "maxDegreeFirst";
 };
-
-template <class Archive>
-void HeuristicNodePair::serialize(Archive &ar, const unsigned int version) {
-  ar &node;
-  ar &value;
-}
