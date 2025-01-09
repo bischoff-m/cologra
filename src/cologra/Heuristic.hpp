@@ -3,10 +3,16 @@
 #include "definitions.hpp"
 #include <functional>
 #include <queue>
-#include <vector>
 #include <string>
+#include <vector>
 
-typedef std::vector<int> HeuristicOrder;
+using namespace std;
+
+/**
+ * An order of vertices. First element is the vertex, second element is the
+ * heuristic value.
+ */
+typedef vector<HeuristicNodePair> HeuristicOrder;
 
 struct Heuristic {
   static bool isHeuristic(std::string id);
@@ -14,4 +20,13 @@ struct Heuristic {
   static HeuristicOrder fromId(std::string id, const Graph &graph);
   static HeuristicOrder minDegreeFirst(const Graph &graph);
   static HeuristicOrder maxDegreeFirst(const Graph &graph);
+};
+
+struct HeuristicNodePair {
+  int node;
+  int value;
+
+  friend class boost::serialization::access;
+  template <class Archive>
+  void serialize(Archive &ar, const unsigned int version);
 };

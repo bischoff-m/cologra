@@ -18,6 +18,8 @@ target_link_libraries(cologra PRIVATE MPI::MPI_CXX)
 target_link_libraries(cologra PRIVATE Eigen3::Eigen)
 target_link_libraries(cologra PUBLIC fast_matrix_market::fast_matrix_market)
 target_link_libraries(cologra INTERFACE Boost::graph)
+target_link_libraries(cologra PRIVATE Boost::mpi)
+target_link_libraries(cologra PRIVATE Boost::serialization)
 
 target_link_libraries(benchmark PRIVATE fmt::fmt)
 target_link_libraries(benchmark PRIVATE MPI::MPI_CXX)
@@ -27,6 +29,8 @@ target_link_libraries(benchmark INTERFACE Boost::graph)
 target_link_libraries(benchmark PRIVATE Boost::stacktrace_basic)
 target_link_libraries(benchmark PRIVATE lfreist-hwinfo::hwinfo)
 target_link_libraries(benchmark PRIVATE cologra)
+target_link_libraries(benchmark PRIVATE Boost::mpi)
+target_link_libraries(benchmark PRIVATE Boost::serialization)
 
 install(
     TARGETS cologra

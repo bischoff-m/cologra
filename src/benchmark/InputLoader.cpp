@@ -40,6 +40,7 @@ InputLoader::~InputLoader() {
 }
 
 void InputLoader::load(bool useCache) {
+  // TODO: Load only matrices defined in targets
   loadSubsets();
   if (subsets->empty()) {
     cout << "No subsets found in " << Paths::subsets << endl;

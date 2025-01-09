@@ -1,46 +1,62 @@
 #include "Heuristic.hpp"
-
 #include <algorithm>
 
-HeuristicOrder Heuristic::fromId(std::string id, const Graph &graph) {
+using namespace std;
+
+HeuristicOrder Heuristic::fromId(string id, const Graph &graph) {
   if (id == "minDegreeFirst") {
     return minDegreeFirst(graph);
   } else if (id == "maxDegreeFirst") {
     return maxDegreeFirst(graph);
   } else {
-    throw std::invalid_argument("Invalid heuristic id");
+    throw invalid_argument("Invalid heuristic id");
   }
 };
 
 HeuristicOrder Heuristic::minDegreeFirst(const Graph &graph) {
-  std::vector<int> order;
-  order.reserve(graph.m_vertices.size());
+  // Create a vector of pairs (vertex, degree)
+  HeuristicOrder order;
+  order.reserve(num_vertices(graph));
   for (auto node : boost::make_iterator_range(boost::vertices(graph))) {
-      order.push_back(node);
+    HeuristicNodePair nodeAndValue;
+    nodeAndValue.node = node;
+    nodeAndValue.value = degree(node, graph);
+    order.push_back(nodeAndValue);
   }
-
-  std::sort(order.begin(), order.end(), [&graph](int a, int b) {
-    return degree(a, graph) < degree(b, graph);
-  });
-
+  // Sort by degree
+  sort(order.begin(),
+      order.end(),
+      [](const HeuristicNodePair &a, const HeuristicNodePair &b) {
+        return a.value < b.value;
+      });
   return order;
 }
 
 HeuristicOrder Heuristic::maxDegreeFirst(const Graph &graph) {
-  std::vector<int> order;
-  order.reserve(graph.m_vertices.size());
+  // Create a vector of pairs (vertex, degree)
+  HeuristicOrder order;
+  order.reserve(num_vertices(graph));
   for (auto node : boost::make_iterator_range(boost::vertices(graph))) {
-      order.push_back(node);
+    HeuristicNodePair nodeAndValue;
+    nodeAndValue.node = node;
+    nodeAndValue.value = degree(node, graph);
+    order.push_back(nodeAndValue);
   }
-
-  std::sort(order.begin(), order.end(), [&graph](int a, int b) {
-    return degree(a, graph) > degree(b, graph);
-  });
-
+  // Sort by degree
+  sort(order.begin(),
+      order.end(),
+      [](const HeuristicNodePair &a, const HeuristicNodePair &b) {
+        return a.value > b.value;
+      });
   return order;
 }
 
-
-bool Heuristic::isHeuristic(std::string id) {
+bool Heuristic::isHeuristic(string id) {
   return id == "minDegreeFirst" || id == "maxDegreeFirst";
 };
+
+template <class Archive>
+void HeuristicNodePair::serialize(Archive &ar, const unsigned int version) {
+  ar &node;
+  ar &value;
+}

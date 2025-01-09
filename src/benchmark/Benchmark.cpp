@@ -1,6 +1,8 @@
 #include "Benchmark.hpp"
 #include "BenchmarkResult.hpp"
 #include "CaptureLog.hpp"
+#include <boost/mpi.hpp>
+#include <boost/mpi/communicator.hpp>
 #include <boost/stacktrace.hpp>
 #include <chrono>
 #include <ctime>
@@ -28,14 +30,22 @@ Benchmark::Benchmark(vector<BenchmarkTarget> targets)
     : targets(targets), loader() {}
 
 void Benchmark::measure(AlgorithmFactory getAlgorithm) {
-  loader.load();
-  cout << "Starting benchmark" << endl;
+  boost::mpi::communicator world;
+
+  if (world.rank() == 0) {
+    cout << "Starting benchmark" << endl;
+    loader.load();
+  }
+
   for (const auto &target : targets) {
-    for (const auto &datasetId : target.datasetIds) {
-      auto dataset = loader.getDataset(datasetId);
-      for (const auto &algorithmId : target.algorithmIds) {
-        cout << "Running " << algorithmId << " on " << datasetId << endl;
-        auto algorithm = getAlgorithm(algorithmId, target.parameters);
+    for (const auto &algorithmId : target.algorithmIds) {
+      auto algorithm = getAlgorithm(algorithmId, target.parameters);
+      if (world.rank() != 0) {
+        algorithm->assistIfParallel();
+        continue;
+      }
+      for (const auto &datasetId : target.datasetIds) {
+        auto dataset = loader.getDataset(datasetId);
 
         BenchmarkResult benchmarkResult;
         benchmarkResult.timestampMs =
@@ -50,19 +60,21 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
         int64_t totalNumColors = 0;
 
         for (const auto &[matrixId, graph] : dataset) {
+          cout << "Running " << algorithmId << " on " << matrixId << endl;
           vector<VerticesSizeType> colorVec(boost::num_vertices(graph));
           ColorMap coloring(&colorVec.front(), get(vertex_index, graph));
           VerticesSizeType numColors = 0;
           int64_t duration = 0;
           bool didFail = false;
 
-          CaptureLog *rd = new CaptureLog();
+          // CaptureLog *rd = new CaptureLog();
           try {
             auto t1 = high_resolution_clock::now();
             numColors = algorithm->computeColoring(graph, coloring);
             auto t2 = high_resolution_clock::now();
             duration = duration_cast<nanoseconds>(t2 - t1).count();
           } catch ([[with_stacktrace]] std::exception &e) {
+            // TODO: Parallel?
             didFail = true;
             // Write to cerr to avoid interference with the capture
             cerr << e.what() << "\n" << boost::stacktrace::stacktrace() << endl;
@@ -73,11 +85,13 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
           result.numColors = numColors;
           result.matrixId = matrixId;
           result.didFail = didFail;
-          result.logOut = rd->getCout();
-          result.logErr = rd->getCerr();
+          // result.logOut = rd->getCout();
+          // result.logErr = rd->getCerr();
+          result.logOut = "Disabled for now";
+          result.logErr = "Disabled for now";
           benchmarkResult.results.push_back(result);
 
-          delete rd;
+          // delete rd;
           totalDuration += duration;
           totalNumColors += numColors;
         }
@@ -87,7 +101,12 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
         benchmarkResult.aggregated.sumNumColors = totalNumColors;
         benchmarkResult.writeToFile();
       }
+      if (world.rank() == 0) {
+        algorithm->stopIfParallel();
+      }
     }
   }
-  cout << "Benchmark finished" << endl;
+  if (world.rank() == 0) {
+    cout << "Benchmark finished" << endl;
+  }
 }

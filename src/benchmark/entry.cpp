@@ -2,6 +2,7 @@
 #include "../cologra/algorithms/BasicSequential.hpp"
 #include "../cologra/algorithms/BoostSequential.hpp"
 #include "../cologra/algorithms/OrderedSequential.hpp"
+#include "../cologra/algorithms/RandomPermutationQueue/RandomPermutationQueue.hpp"
 #include "Benchmark.hpp"
 #include <fmt/core.h>
 
@@ -14,21 +15,33 @@ ColoringAlgorithm *createAlgorithm(string id, json params) {
     return new OrderedSequential(params);
   } else if (id == "BasicParallel") {
     return new BasicParallel();
+  } else if (id == "RandomPermutationQueue") {
+    return new RandomPermutationQueue(params);
   } else {
     throw invalid_argument(fmt::format("Algorithm {} not found", id));
   }
 }
 
 void runBenchmark() {
-  json params = {{"heuristic", "maxDegreeFirst"}};
+  // clang-format off
+  vector<string> datasetIds = {
+    // "small_mtx"
+    "small_mtx_3elements"
+  };
+  vector<string> algorithmIds = {
+    // "BasicSequential",
+    // "BoostSequential",
+    // "OrderedSequential",
+    // "BasicParallel",
+    "RandomPermutationQueue"
+  };
+  json params = {
+    {"heuristic", "maxDegreeFirst"}
+  };
+  // clang-format on
 
   vector<BenchmarkTarget> targets = {
-      {{"small_mtx"},
-          {"BasicSequential",
-              "BoostSequential",
-              "OrderedSequential",
-              "BasicParallel"},
-          params},
+      {datasetIds, algorithmIds, params},
   };
 
   Benchmark benchmark(targets);

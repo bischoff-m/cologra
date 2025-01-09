@@ -1,14 +1,16 @@
 {
   "dependencies": [
     "boost-graph",
+    "boost-iterator",
+    "boost-mpi",
+    "boost-serialization",
     "boost-stacktrace",
     "eigen3",
     "fmt",
     "gtest",
     "indicators",
-    "nlohmann-json",
     "lfreist-hwinfo",
-    "openmpi",
-    "boost-iterator"
+    "nlohmann-json",
+    "boost-cmake"
   ]
 }

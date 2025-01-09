@@ -53,6 +53,13 @@ def subset_small_mtx(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["isReal"]]
     return df.sample(n=100, random_state=42)
 
+@subset("small_mtx_3elements")
+def subset_small_mtx(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df["format"] == MatrixFormats.MATRIX_MARKET.value]
+    df = df[df["nnz"] < 1e4]
+    df = df[df["isReal"]]
+    return df.sample(n=3, random_state=42)
+
 
 if __name__ == "__main__":
     df = index_available()
