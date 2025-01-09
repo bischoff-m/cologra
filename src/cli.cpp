@@ -9,9 +9,13 @@
 #include "cologra/algorithms/BasicParallel.hpp"
 #include "cologra/algorithms/OrderedSequential.hpp"
 #include "cologra/algorithms/BoostSequential.hpp"
+#include "cologra/algorithms/RandomPermutationQueue/RandomPermutationQueue.hpp"
 #include <nlohmann/json.hpp>
 #include "cologra/ColoringAlgorithm.hpp"
 #include <fmt/core.h>
+#include "benchmark/entry.hpp"
+#include <boost/mpi.hpp>
+#include <boost/mpi/environment.hpp>
 
 
 ColoringAlgorithm *createAlgorithm(string id, json params) {
@@ -38,6 +42,18 @@ int main(int argc, char const *argv[])
     if (cmdl[{"-h", "--help"}] || cmdl.params().size()==0)
     {
         
+        std::cout << "USAGE: cologra_cli [bench|color|compress] [FLAGS]" << std::endl;
+        std::cout << std::endl;
+        std::cout << "cologra_cli bench\t\t computes our benchmark" << std::endl;
+        std::cout << std::endl;
+        std::cout << "cologra_cli color -i <path_to_input_file> -o <path_to_output_file>,\t\t interprets the matrix as adjacency matrix of a graph, computes a coloring, prints the number of colors used and (if an outfile is given) writes the adjacency matrix of the colored graph" << std::endl;
+        std::cout << "color, compress\t\t computes a coloring for the given matrix" << std::endl;
+        std::cout << "bench\t\t prints this message" << std::endl;
+        std::cout << "FLAGS:" << std::endl;
+        std::cout << "-h, --help\t\t prints this message" << std::endl;
+        std::cout << "-i, --input [path_to_file]\t\t prints this message" << std::endl;
+        std::cout << "-o, --output, compress-to\t\t prints this message" << std::endl;
+        std::cout << "-h, --help\t\t prints this message" << std::endl;
         std::cout << "-h, --help\t\t prints this message" << std::endl;
         std::cout << "HELP WANTED";
         return 0;
@@ -46,6 +62,12 @@ int main(int argc, char const *argv[])
     bool make_verbose = cmdl[{"-v", "--verbose"}];
     if (make_verbose){
         std::cout << "The Output is verbose" << std::endl;
+    }
+
+    if(cmdl(1) == "bench"){
+        mpi::environment env(argc-1, argv+1);
+        runBenchmark();
+        return 0;
     }
     std::filesystem::path infile;
     if (cmdl({"-i", "--input"}) >> infile){
@@ -56,7 +78,7 @@ int main(int argc, char const *argv[])
     }
     
     std::filesystem::path outfile;
-    if (cmdl({"-o", "--output"}) >> outfile){
+    if (cmdl({"-o", "--output", "--compress-to"}) >> outfile){
         std::cout << "Writing into "<< outfile << std::endl;
     }else{
         std::cout << "No valid output file path given, not writing anything" << std::endl;
