@@ -19,7 +19,7 @@ VerticesSizeType greedyColorOrdered(
     auto node = order.at(current_node);
     current_node++;
     // Get the neighbors of the node
-    auto neighbors = boost::adjacent_vertices(node, graph);
+    auto neighbors = boost::adjacent_vertices(node.node, graph);
 
     // Get the colors of the neighbors
     vector<VerticesSizeType> neighborColors;
@@ -33,7 +33,7 @@ VerticesSizeType greedyColorOrdered(
           neighborColors.end())
         break;
 
-    boost::put(coloring, node, color);
+    boost::put(coloring, node.node, color);
     numColors = max(numColors, color + 1);
   }
   return numColors;

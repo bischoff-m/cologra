@@ -40,3 +40,7 @@ ColoringAlgorithm::ColoringAlgorithm(
 string ColoringAlgorithm::getId() const { return algorithmId.toString(); }
 
 json ColoringAlgorithm::getParameters() const { return parameters; }
+
+void ColoringAlgorithm::assistIfParallel() {}
+
+void ColoringAlgorithm::stopIfParallel() {}

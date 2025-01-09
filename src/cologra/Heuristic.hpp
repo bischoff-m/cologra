@@ -3,10 +3,21 @@
 #include "definitions.hpp"
 #include <functional>
 #include <queue>
-#include <vector>
 #include <string>
+#include <vector>
 
-typedef std::vector<int> HeuristicOrder;
+using namespace std;
+
+struct HeuristicNodePair {
+  int node;
+  int value;
+};
+
+/**
+ * An order of vertices. First element is the vertex, second element is the
+ * heuristic value.
+ */
+typedef vector<HeuristicNodePair> HeuristicOrder;
 
 struct Heuristic {
   static bool isHeuristic(std::string id);

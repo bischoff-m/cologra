@@ -6,16 +6,11 @@
 #include <vector>
 
 #include "../cologra/ColoringAlgorithm.hpp"
+#include "BenchmarkResult.hpp"
 #include "InputLoader.hpp"
 
 using namespace std;
 using json = nlohmann::json;
-
-struct BenchmarkTarget {
-  vector<string> datasetIds;
-  vector<string> algorithmIds;
-  json parameters;
-};
 
 typedef std::function<ColoringAlgorithm *(string id, json params)>
     AlgorithmFactory;

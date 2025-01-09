@@ -41,10 +41,10 @@ default: build
 all: build
 
 build:
-	( cd build && cmake .. --preset=vcpkg && cmake --build . --config Release -j${JOBS} )
+	( cmake --preset=vcpkg && cmake --build build --config Release -j${JOBS} )
 
 run: build
-	- mpirun -np 1 build/src/cologra_cli
+	- mpirun -np 3 build/src/cologra_cli
 
 debug:
 	( cd build && cmake -DCMAKE_BUILD_TYPE=Debug .. --preset=vcpkg && cmake --build . --config Release -j${JOBS} )

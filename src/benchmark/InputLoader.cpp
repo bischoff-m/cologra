@@ -1,16 +1,14 @@
 #include "InputLoader.hpp"
 #include "../cologra/util/matrixToGraph.hpp"
 #include "Paths.hpp"
+#include "ProgressBarIterator.hpp"
 #include <boost/graph/graphviz.hpp>
 #include <fmt/core.h>
 #include <fstream>
-#include <indicators/block_progress_bar.hpp>
-#include <indicators/cursor_control.hpp>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <regex>
 
-using namespace indicators;
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
@@ -40,6 +38,7 @@ InputLoader::~InputLoader() {
 }
 
 void InputLoader::load(bool useCache) {
+  // TODO: Load only matrices defined in targets
   loadSubsets();
   if (subsets->empty()) {
     cout << "No subsets found in " << Paths::subsets << endl;
@@ -112,21 +111,12 @@ void InputLoader::indexToGraphs(bool useCache) {
   }
   map<string, Graph> graphs;
 
-  // Initialize progress bar
-  show_console_cursor(false);
-  BlockProgressBar bar{
-      option::MaxProgress{index->size()},
-  };
+  ProgressBarIterator<SuiteSparseMatrix *> progressBar(
+      index->begin(), index->end());
 
   int count = 0;
-  for (auto it = index->begin(); it != index->end(); ++it) {
-    string id = it->first;
-    SuiteSparseMatrix *matrixPtr = it->second;
-
-    // Show iteration as postfix text
-    int i = std::distance(index->begin(), it);
-    bar.set_option(option::PostfixText{
-        fmt::format(" {}/{} {}", i + 1, index->size(), id)});
+  while (progressBar.begin() != progressBar.end()) {
+    auto &[id, matrixPtr] = progressBar.next();
 
     // Get filename for cache
     string filename = id;
@@ -167,10 +157,8 @@ void InputLoader::indexToGraphs(bool useCache) {
         cout << "Error loading matrix " << id << ": " << e.what() << endl;
       }
     }
-    bar.tick();
   }
-  bar.mark_as_completed();
-  show_console_cursor(true);
+  progressBar.finish();
 
   int total = index->size();
   cout << fmt::format("Loaded {} out of {} matrices", count, total) << endl;

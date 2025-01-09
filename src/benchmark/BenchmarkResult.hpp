@@ -8,6 +8,12 @@
 using namespace std;
 using json = nlohmann::json;
 
+struct BenchmarkTarget {
+  vector<string> datasetIds;
+  vector<string> algorithmIds;
+  json parameters;
+};
+
 struct MachineInfo {
   string osName;
   int64_t totalMemoryBytes;
@@ -16,8 +22,8 @@ struct MachineInfo {
 };
 
 struct AggregatedValues {
-  int64_t totalTime;
-  int64_t averageTime;
+  int64_t totalTimeNs;
+  int64_t averageTimeNs;
   int64_t sumNumColors;
 };
 
@@ -40,5 +46,7 @@ struct BenchmarkResult {
   json parameters;
   MachineInfo machineInfo;
 
-  void writeToFile();
+  json toJson();
+  static void writeMultiple(
+      vector<BenchmarkResult> &results, const BenchmarkTarget &target);
 };

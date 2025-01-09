@@ -4,14 +4,11 @@ project(cologra CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# fmt
 find_package(fmt CONFIG REQUIRED)
-
-# MPI
 find_package(MPI REQUIRED)
-
-# Eigen3
+find_package(boost_mpi CONFIG REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
+find_package(boost_serialization CONFIG REQUIRED)
 
 # Fast Matrix Market
 include(FetchContent)
