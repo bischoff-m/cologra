@@ -46,16 +46,17 @@ int main(int argc, char const *argv[])
         std::cout << std::endl;
         std::cout << "cologra_cli bench\t\t computes our benchmark" << std::endl;
         std::cout << std::endl;
-        std::cout << "cologra_cli color -i <path_to_input_file> -o <path_to_output_file>,\t\t interprets the matrix as adjacency matrix of a graph, computes a coloring, prints the number of colors used and (if an outfile is given) writes the adjacency matrix of the colored graph" << std::endl;
-        std::cout << "color, compress\t\t computes a coloring for the given matrix" << std::endl;
+        std::cout << "cologra_cli color -i <path_to_input_file> -o <path_to_output_file>,\t\t interprets the matrix as adjacency matrix of a graph, computes a coloring, prints the number of colors used and (if an outfile is given) writes the colored graph in TODO form" << std::endl;
+        std::cout << "cologra_cli compress -i <path_to_input_file> -o <path_to_output_file>\t\t like color, only the file output is the compressed matrix instead of the colored graph" << std::endl;
         std::cout << "bench\t\t prints this message" << std::endl;
         std::cout << "FLAGS:" << std::endl;
         std::cout << "-h, --help\t\t prints this message" << std::endl;
-        std::cout << "-i, --input [path_to_file]\t\t prints this message" << std::endl;
-        std::cout << "-o, --output, compress-to\t\t prints this message" << std::endl;
-        std::cout << "-h, --help\t\t prints this message" << std::endl;
-        std::cout << "-h, --help\t\t prints this message" << std::endl;
-        std::cout << "HELP WANTED";
+        std::cout << "-h, --verbose\t\t prints this message" << std::endl;
+        std::cout << "-i, --input <path_to_file>\t\t specify input file" << std::endl;
+        std::cout << "-o, --output <path_to_file>, compress-to\t\t specify output file" << std::endl;
+        std::cout << "-a, --algorithm <algo-name>\t\t which algorithm is used for the coloring" << std::endl;
+        std::cout << "--columnIntersectionGraph\t\t chenges the first step by creating a CIG instead of interpreting the matrix as adjacency matrix" << std::endl;
+        std::cout << "--adjacencyGraph\t\t chenges the first step by creating a CIG instead of interpreting the matrix as adjacency matrix" << std::endl;
         return 0;
     }
     
@@ -115,7 +116,7 @@ int main(int argc, char const *argv[])
     std::cout << numColors << " colors used" << std::endl;
 
 
-    
+    // TODO: write result into file somehow
 
     return 0;
 }
