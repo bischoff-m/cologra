@@ -10,7 +10,6 @@
     "gtest",
     "indicators",
     "lfreist-hwinfo",
-    "openmpi",
     "argh",
     "nlohmann-json",
     "boost-cmake"

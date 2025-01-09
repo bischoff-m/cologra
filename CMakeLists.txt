@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(fmt CONFIG REQUIRED)
-find_package(MPI REQUIRED)
 find_package(boost_mpi CONFIG REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
 find_package(boost_serialization CONFIG REQUIRED)
