@@ -36,7 +36,7 @@ install(
     INCLUDES DESTINATION include/cologra
 )
 
-add_executable(cologra_cli main.cpp)
+add_executable(cologra_cli cli.cpp)
 target_link_libraries(cologra_cli PUBLIC cologra)
 target_link_libraries(cologra_cli PUBLIC benchmark)
 

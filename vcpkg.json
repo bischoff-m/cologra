@@ -1,6 +1,7 @@
 {
   "dependencies": [
     "boost-graph",
+    "boost-iterator",
     "boost-stacktrace",
     "eigen3",
     "fmt",
@@ -9,6 +10,6 @@
     "nlohmann-json",
     "lfreist-hwinfo",
     "openmpi",
-    "boost-iterator"
+    "argh"
   ]
 }
