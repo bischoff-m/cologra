@@ -11,3 +11,4 @@
  * @return True if the coloring is a valid distance-1 coloring
  */
 bool isDistance1Coloring(Graph graph, ColorMap coloring);
+ColorMap getEmptyColorMap(Graph graph);

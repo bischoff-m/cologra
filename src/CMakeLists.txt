@@ -14,7 +14,6 @@ add_library(benchmark STATIC
 )
 
 target_link_libraries(cologra PRIVATE fmt::fmt)
-target_link_libraries(cologra PRIVATE MPI::MPI_CXX)
 target_link_libraries(cologra PRIVATE Eigen3::Eigen)
 target_link_libraries(cologra PUBLIC fast_matrix_market::fast_matrix_market)
 target_link_libraries(cologra INTERFACE Boost::graph)

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <vector>
+#include "../util/coloring.hpp"
 
 using namespace std;
 
@@ -88,15 +89,15 @@ ColorType sequenceDependentGreedyDist2Coloring(
   return numColors;
 }
 
-ColorType BasicParallel::computeColoring(Graph graph, ColorMap coloring) {
+OutType BasicParallel::computeColoring(Graph graph) {
+  ColorMap coloring = getEmptyColorMap(graph);
   VertexIteratorRange identity_ordering = boost::vertices(graph);
 
   std::vector<VertexIteratorRange> index_iterators = {identity_ordering};
   ColorType numColors = std::numeric_limits<ColorType>::max();
 #pragma omp parallel for reduction(min : numColors)
   for (auto &indices : index_iterators) {
-    vector<ColorType> colorVec(boost::num_vertices(graph));
-    ColorMap local_coloring(&colorVec.front(), get(vertex_index, graph));
+    ColorMap local_coloring = getEmptyColorMap(graph);
     ColorType local_numColors =
         sequenceDependentGreedyColoring(graph, local_coloring, indices);
 #pragma omp critical
@@ -107,18 +108,18 @@ ColorType BasicParallel::computeColoring(Graph graph, ColorMap coloring) {
       }
     }
   }
-  return numColors;
+  return {numColors, coloring};
 }
 
-ColorType BasicParallel::computeDist2Coloring(Graph graph, ColorMap coloring) {
+OutType BasicParallel::computeDist2Coloring(Graph graph) {
+  ColorMap coloring = getEmptyColorMap(graph);
   VertexIteratorRange identity_ordering = boost::vertices(graph);
 
   std::vector<VertexIteratorRange> index_iterators = {identity_ordering};
   ColorType numColors = std::numeric_limits<ColorType>::max();
 #pragma omp parallel for reduction(min : numColors)
   for (auto &indices : index_iterators) {
-    vector<ColorType> colorVec(boost::num_vertices(graph));
-    ColorMap local_coloring(&colorVec.front(), get(vertex_index, graph));
+    ColorMap local_coloring = getEmptyColorMap(graph);
     ColorType local_numColors =
         sequenceDependentGreedyDist2Coloring(graph, local_coloring, indices);
 #pragma omp critical
@@ -129,5 +130,5 @@ ColorType BasicParallel::computeDist2Coloring(Graph graph, ColorMap coloring) {
       }
     }
   }
-  return numColors;
+  return {numColors, coloring};
 }

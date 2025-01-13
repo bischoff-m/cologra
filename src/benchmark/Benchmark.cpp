@@ -75,7 +75,7 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
           // CaptureLog *rd = new CaptureLog();
           try {
             auto t1 = high_resolution_clock::now();
-            numColors = algorithm->computeColoring(graph, coloring);
+            numColors = algorithm->computeColoring(graph).first;
             auto t2 = high_resolution_clock::now();
             duration = duration_cast<nanoseconds>(t2 - t1).count();
           } catch ([[with_stacktrace]] std::exception &e) {

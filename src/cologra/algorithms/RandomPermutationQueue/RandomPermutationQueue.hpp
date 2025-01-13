@@ -13,7 +13,7 @@ private:
 
 public:
   RandomPermutationQueue(const nlohmann::json &params);
-  VerticesSizeType computeColoring(Graph graph, ColorMap coloring) override;
+  OutType computeColoring(Graph graph) override;
   void assistIfParallel() override;
   void stopIfParallel() override;
 };
