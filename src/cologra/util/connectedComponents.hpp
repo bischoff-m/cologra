@@ -4,7 +4,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
 
-std::vector<Graph> get_connected_components(Graph graph) {
+std::vector<Graph> getConnectedComponents(Graph graph) {
   std::vector<VertexType> component(boost::num_vertices(graph));
   VerticesSizeType num_components =
       boost::connected_components(graph, &component[0]);

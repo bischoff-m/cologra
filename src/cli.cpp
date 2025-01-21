@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
 
   int k;
   if (cmdl["--use-degeneracy"] >> k) {
-    degeneracy_graph(graph, k);
+    degeneracyGraph(graph, k);
   }
 
   json params = json::parse(cmdl("--params", "").str());
