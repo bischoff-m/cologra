@@ -1,13 +1,12 @@
 #pragma once
 
 #include "../ColoringAlgorithm.hpp"
-#include <fmt/core.h>
-#include "../algorithms/BasicSequential.hpp"
 #include "../algorithms/BasicParallel.hpp"
-#include "../algorithms/OrderedSequential.hpp"
+#include "../algorithms/BasicSequential.hpp"
 #include "../algorithms/BoostSequential.hpp"
+#include "../algorithms/OrderedSequential.hpp"
 #include "../algorithms/RandomPermutationQueue/RandomPermutationQueue.hpp"
-
+#include <fmt/core.h>
 
 ColoringAlgorithm *createAlgorithm(string id, json params) {
   if (id == "BasicSequential") {

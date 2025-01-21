@@ -16,4 +16,4 @@ typedef iterator_property_map<ColorType *, VertexIndexMap> ColorMap;
 typedef std::pair<graph_traits<Graph>::vertex_iterator,
     graph_traits<Graph>::vertex_iterator>
     VertexIteratorRange;
-typedef std::pair<ColorType,ColorMap> OutType;
+typedef std::pair<ColorType, ColorMap> OutType;

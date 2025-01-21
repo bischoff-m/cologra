@@ -1,10 +1,10 @@
 #include "BasicSequential.hpp"
+#include "../util/coloring.hpp"
 #include <Eigen/SparseCore>
 #include <algorithm>
 #include <boost/graph/adjacency_list.hpp>
 #include <nlohmann/json.hpp>
 #include <vector>
-#include "../util/coloring.hpp"
 
 using namespace std;
 
@@ -12,8 +12,7 @@ BasicSequential::BasicSequential()
     : ColoringAlgorithm(
           nlohmann::json(), AlgorithmId("BasicSequential", "1.0")) {}
 
-OutType BasicSequential::computeColoring(
-    Graph graph) {
+OutType BasicSequential::computeColoring(Graph graph) {
   ColorMap coloring = getEmptyColorMap(graph);
   // Set all entries in the coloring to -1
   for (auto node : boost::make_iterator_range(boost::vertices(graph)))

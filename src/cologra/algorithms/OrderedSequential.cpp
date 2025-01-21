@@ -1,8 +1,8 @@
 #include "OrderedSequential.hpp"
+#include "../util/coloring.hpp"
 #include <functional>
 #include <iostream>
 #include <queue>
-#include "../util/coloring.hpp"
 
 using namespace std;
 
@@ -49,8 +49,7 @@ OrderedSequential::OrderedSequential(const nlohmann::json &params)
   heuristicId = params["heuristic"];
 }
 
-OutType OrderedSequential::computeColoring(
-    Graph graph) {
+OutType OrderedSequential::computeColoring(Graph graph) {
   auto heuristic = Heuristic::fromId(heuristicId, graph);
   ColorMap coloring = getEmptyColorMap(graph);
   return {greedyColorOrdered(graph, coloring, heuristic), coloring};

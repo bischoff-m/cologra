@@ -16,7 +16,7 @@ bool isDistance1Coloring(Graph graph, ColorMap coloring) {
   return true;
 }
 
-ColorMap getEmptyColorMap(Graph graph){
+ColorMap getEmptyColorMap(Graph graph) {
   std::vector<ColorType> colorVec(boost::num_vertices(graph));
   ColorMap coloring(&colorVec.front(), boost::get(vertex_index, graph));
   return coloring;

@@ -1,5 +1,6 @@
 #include "BasicParallel.hpp"
 #include "../Heuristic.hpp"
+#include "../util/coloring.hpp"
 #include <Eigen/SparseCore>
 #include <algorithm>
 #include <boost/graph/adjacency_list.hpp>
@@ -7,7 +8,6 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <vector>
-#include "../util/coloring.hpp"
 
 using namespace std;
 
@@ -64,9 +64,10 @@ ColorType sequenceDependentGreedyDist2Coloring(
     // Get the neighbors of the node
     auto neighbors = boost::adjacent_vertices(node, graph);
     std::vector<VertexType> neighborsneighbors = {};
-    for (auto neighbor : boost::make_iterator_range(neighbors)){
+    for (auto neighbor : boost::make_iterator_range(neighbors)) {
       neighborsneighbors.push_back(neighbor);
-      for (auto nn : boost::make_iterator_range(boost::adjacent_vertices(neighbor, graph))){
+      for (auto nn : boost::make_iterator_range(
+               boost::adjacent_vertices(neighbor, graph))) {
         neighborsneighbors.push_back(nn);
       }
     }

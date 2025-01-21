@@ -1,4 +1,3 @@
-#pragma once
 #include "ColoringAlgorithm.hpp"
 #include <fmt/core.h>
 #include <regex>
