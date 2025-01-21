@@ -1,6 +1,7 @@
 #include "RandomPermutationQueue.hpp"
 #include "../../Heuristic.hpp"
 #include "../../definitions.hpp"
+#include "../../util/coloring.hpp"
 // TODO: Code breaks without this cpp include, why?
 #include "ResultOrException.cpp"
 #include "ResultOrException.hpp"
@@ -11,7 +12,6 @@
 #include <boost/serialization/vector.hpp>
 #include <fmt/core.h>
 #include <random>
-#include "../../util/coloring.hpp"
 
 using namespace boost;
 
@@ -65,8 +65,7 @@ vector<int> samplePermutationUniform(int size) {
   return result;
 }
 
-OutType RandomPermutationQueue::computeColoring(
-    Graph graph) {
+OutType RandomPermutationQueue::computeColoring(Graph graph) {
   ColorMap coloring = getEmptyColorMap(graph);
   mpi::communicator world;
   if (world.rank() != 0) {
@@ -111,8 +110,7 @@ OutType RandomPermutationQueue::computeColoring(
 
   while (!all_of(isIdle.begin(), isIdle.end(), [](bool b) { return b; })) {
     // Handle incoming messages
-    std::pair<mpi::status, std::vector<mpi::request>::iterator> result =
-        mpi::wait_any(requests.begin(), requests.end());
+    auto result = mpi::wait_any(requests.begin(), requests.end());
 
     int i = result.second - requests.begin();
     if (result.first.tag() != Message::RESULT)

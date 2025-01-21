@@ -110,6 +110,7 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
       if (world.rank() == 0) {
         algorithm->stopIfParallel();
       }
+      delete algorithm;
     }
     if (world.rank() == 0) {
       BenchmarkResult::writeMultiple(results, target);

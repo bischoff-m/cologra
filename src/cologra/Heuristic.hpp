@@ -9,7 +9,7 @@
 using namespace std;
 
 struct HeuristicNodePair {
-  int node;
+  VertexType node;
   int value;
 };
 
