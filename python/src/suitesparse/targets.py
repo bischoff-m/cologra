@@ -53,12 +53,14 @@ def subset_small_mtx(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["isReal"]]
     return df.sample(n=100, random_state=42)
 
+
 @subset("small_mtx_3elements")
-def subset_small_mtx(df: pd.DataFrame) -> pd.DataFrame:
+def subset_small_mtx_3elements(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["format"] == MatrixFormats.MATRIX_MARKET.value]
     df = df[df["nnz"] < 1e4]
     df = df[df["isReal"]]
     return df.sample(n=3, random_state=42)
+
 
 @subset("for_testing")
 def subset_for_testing(df: pd.DataFrame) -> pd.DataFrame:
@@ -67,6 +69,14 @@ def subset_for_testing(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["name"] == "netz4504"]
     assert len(df) == 1
     return df
+
+
+@subset("medium_mtx")
+def subset_medium_mtx(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df["format"] == MatrixFormats.MATRIX_MARKET.value]
+    df = df[(df["nnz"] < 2e4) & (df["nnz"] > 1e4)]
+    df = df[df["isReal"]]
+    return df.sample(n=5, random_state=42)
 
 
 if __name__ == "__main__":
