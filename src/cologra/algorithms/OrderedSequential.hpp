@@ -13,5 +13,5 @@ private:
 
 public:
   OrderedSequential(const nlohmann::json &params);
-  VerticesSizeType computeColoring(Graph graph, ColorMap coloring) override;
+  OutType computeColoring(Graph graph) override;
 };

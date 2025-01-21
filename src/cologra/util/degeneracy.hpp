@@ -1,3 +1,4 @@
+#pragma once
 #include "../definitions.hpp"
 #include <queue>
 #include <boost/graph/adjacency_list.hpp>

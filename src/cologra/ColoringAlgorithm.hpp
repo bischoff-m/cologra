@@ -44,7 +44,8 @@ public:
    * @param coloring This map will be filled with the coloring
    * @return Number of colors used
    */
-  virtual VerticesSizeType computeColoring(Graph graph, ColorMap coloring) = 0;
+  virtual OutType computeColoring(Graph graph) = 0;
+  //virtual OutType computeDist2Coloring(Graph graph) = 0;
 
   /**
    * This method will be called before every call to computeColoring to allow

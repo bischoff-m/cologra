@@ -42,15 +42,15 @@ private:
 
 TEST_F(SampleGraph, GreedyColoring) {
   ColoringAlgorithm *algorithm = new BasicSequential();
-  VerticesSizeType numColors = algorithm->computeColoring(graph, coloring);
-  EXPECT_EQ(numColors, 3);
+  OutType res = algorithm->computeColoring(graph);
+  EXPECT_EQ(res.first, 3);
 }
 
 TEST_F(SampleGraph, IsDistance1Coloring) {
   EXPECT_FALSE(isDistance1Coloring(graph, coloring));
   ColoringAlgorithm *algorithm = new BasicSequential();
-  algorithm->computeColoring(graph, coloring);
-  EXPECT_TRUE(isDistance1Coloring(graph, coloring));
+  OutType res = algorithm->computeColoring(graph);
+  EXPECT_TRUE(isDistance1Coloring(graph, res.second));
 }
 
 TEST_F(SampleGraph, GraphToDot) {

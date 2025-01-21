@@ -11,6 +11,7 @@
 #include <boost/serialization/vector.hpp>
 #include <fmt/core.h>
 #include <random>
+#include "../../util/coloring.hpp"
 
 using namespace boost;
 
@@ -64,9 +65,9 @@ vector<int> samplePermutationUniform(int size) {
   return result;
 }
 
-VerticesSizeType RandomPermutationQueue::computeColoring(
-    Graph graph, ColorMap coloring) {
-
+OutType RandomPermutationQueue::computeColoring(
+    Graph graph) {
+  ColorMap coloring = getEmptyColorMap(graph);
   mpi::communicator world;
   if (world.rank() != 0) {
     throw invalid_argument("This algorithm assumes that computeColoring is "
@@ -138,7 +139,7 @@ VerticesSizeType RandomPermutationQueue::computeColoring(
   for (auto it = vertices(graph).first; it != vertices(graph).second; it++) {
     coloring[*it] = bestColoring[*it];
   }
-  return bestNumColors;
+  return {bestNumColors, coloring};
 }
 
 void RandomPermutationQueue::stopIfParallel() {

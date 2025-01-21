@@ -1,39 +1,23 @@
-#include <argh.h>
-#include <iostream>
-#include <Eigen/SparseCore>
-#include <filesystem>
+//#include "benchmark/entry.hpp"
+#include "cologra/algorithms/BasicParallel.hpp"
+#include "cologra/algorithms/BasicSequential.hpp"
+#include "cologra/algorithms/BoostSequential.hpp"
+#include "cologra/algorithms/OrderedSequential.hpp"
+#include "cologra/algorithms/RandomPermutationQueue/RandomPermutationQueue.hpp"
 #include "cologra/definitions.hpp"
+#include "cologra/util/createAlgorithm.hpp"
+#include "cologra/util/degeneracy.hpp"
 #include "cologra/util/matrixIO.hpp"
 #include "cologra/util/matrixToGraph.hpp"
-#include "cologra/algorithms/BasicSequential.hpp"
-#include "cologra/algorithms/BasicParallel.hpp"
-#include "cologra/algorithms/OrderedSequential.hpp"
-#include "cologra/algorithms/BoostSequential.hpp"
-#include "cologra/algorithms/RandomPermutationQueue/RandomPermutationQueue.hpp"
-#include <nlohmann/json.hpp>
-#include "cologra/ColoringAlgorithm.hpp"
-#include <fmt/core.h>
-#include "benchmark/entry.hpp"
+#include <Eigen/SparseCore>
+#include <argh.h>
 #include <boost/mpi.hpp>
 #include <boost/mpi/environment.hpp>
-#include "cologra/util/degeneracy.cpp"
+#include <filesystem>
+#include <iostream>
+#include <nlohmann/json.hpp>
 
-
-ColoringAlgorithm *createAlgorithm(string id, json params) {
-  if (id == "BasicSequential") {
-    return new BasicSequential();
-  } else if (id == "BoostSequential") {
-    return new BoostSequential();
-  } else if (id == "OrderedSequential") {
-    return new OrderedSequential(params);
-  } else if (id == "BasicParallel") {
-    return new BasicParallel();
-  } else {
-    throw invalid_argument(fmt::format("Algorithm {} not found", id));
-  }
-}
-
-int main(int argc, char const *argv[])
+int main(int argc, char **argv)
 {
     argh::parser cmdl;
     cmdl.add_params({"-i", "--input"}); // pre-register "input" as a param: name + value
@@ -68,8 +52,9 @@ int main(int argc, char const *argv[])
     }
 
     if(cmdl(1).str() == "bench"){
-        mpi::environment env(argc-1, argv+1);
-        runBenchmark();
+        mpi::environment env(argc, argv);       //is it safe to leave "bench" in argv unignored?
+        //runBenchmark();
+        std::cout << "Dependencies broken, sorry, ask Marco about it" << std::endl;
         return 0;
     }
     std::filesystem::path infile;
@@ -123,11 +108,14 @@ int main(int argc, char const *argv[])
     json params = json::parse(cmdl("--params", "").str());
     ColoringAlgorithm * algo =  createAlgorithm(cmdl({"-a", "--algorithm"}).str(), params);
 
-    std::vector<VerticesSizeType> colorVec(boost::num_vertices(graph));
-    ColorMap coloring(&colorVec.front(), get(vertex_index, graph));
     
-    ColorType numColors = algo->computeColoring(graph, coloring);
-    std::cout << numColors << " colors used" << std::endl;
+    OutType result = algo->computeColoring(graph);
+    std::cout << result.first << " colors used" << std::endl;
+
+    for (auto it = vertices(graph).first; it != vertices(graph).second; it++) {
+        std::cout << result.second[*it] << " ";
+    }
+    std::cout << std::endl;
 
     //TODO: rebuild coloring from degenerate graph
 
