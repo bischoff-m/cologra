@@ -15,121 +15,107 @@ BasicParallel::BasicParallel()
     : ColoringAlgorithm(json(), AlgorithmId("BasicParallel", "1.0")) {}
 
 ColorType sequenceDependentGreedyColoring(
-    Graph graph, ColorMap coloring, VertexIteratorRange indices) {
+    Graph graph, ColorVector colorVec, VertexIteratorRange indices) {
+  auto colorIter = getEmptyColoring(graph, colorVec);
   // Set all entries in the coloring to -1
-  for (auto node : boost::make_iterator_range(boost::vertices(graph)))
-    boost::put(coloring, node, -1);
+  for (auto node : make_iterator_range(vertices(graph)))
+    put(*colorIter, node, -1);
 
   // Iterate over all nodes in the given indices sequence
   ColorType numColors = 0;
-  for (auto node : boost::make_iterator_range(
-           boost::make_permutation_iterator(
-               boost::vertices(graph).first, indices.first),
-           boost::make_permutation_iterator(
-               boost::vertices(graph).first, indices.second))) {
+  for (auto node : make_iterator_range(
+           make_permutation_iterator(vertices(graph).first, indices.first),
+           make_permutation_iterator(vertices(graph).first, indices.second))) {
     // Get the neighbors of the node
-    auto neighbors = boost::adjacent_vertices(node, graph);
+    auto neighbors = adjacent_vertices(node, graph);
 
     // Get the colors of the neighbors
     vector<ColorType> neighborColors;
-    for (auto neighbor : boost::make_iterator_range(neighbors))
-      neighborColors.push_back(coloring[neighbor]);
+    for (auto neighbor : make_iterator_range(neighbors))
+      neighborColors.push_back(get(*colorIter, neighbor));
 
     // Find the smallest color not used by any of its neighbors
     ColorType color;
-    for (color = 0; color < boost::num_vertices(graph); color++)
+    for (color = 0; color < num_vertices(graph); color++)
       if (find(neighborColors.begin(), neighborColors.end(), color) ==
           neighborColors.end())
         break;
 
-    boost::put(coloring, node, color);
+    put(*colorIter, node, color);
     numColors = max(numColors, color + 1);
   }
   return numColors;
 }
 
 ColorType sequenceDependentGreedyDist2Coloring(
-    Graph graph, ColorMap coloring, VertexIteratorRange indices) {
+    Graph graph, ColorVector colorVec, VertexIteratorRange indices) {
+  auto colorIter = getEmptyColoring(graph, colorVec);
   // Set all entries in the coloring to -1
-  for (auto node : boost::make_iterator_range(boost::vertices(graph)))
-    boost::put(coloring, node, -1);
+  for (auto node : make_iterator_range(vertices(graph)))
+    put(*colorIter, node, -1);
 
   // Iterate over all nodes in the given indices sequence
   ColorType numColors = 0;
-  for (auto node : boost::make_iterator_range(
-           boost::make_permutation_iterator(
-               boost::vertices(graph).first, indices.first),
-           boost::make_permutation_iterator(
-               boost::vertices(graph).first, indices.second))) {
+  for (auto node : make_iterator_range(
+           make_permutation_iterator(vertices(graph).first, indices.first),
+           make_permutation_iterator(vertices(graph).first, indices.second))) {
     // Get the neighbors of the node
-    auto neighbors = boost::adjacent_vertices(node, graph);
-    std::vector<VertexType> neighborsneighbors = {};
-    for (auto neighbor : boost::make_iterator_range(neighbors)) {
-      neighborsneighbors.push_back(neighbor);
-      for (auto nn : boost::make_iterator_range(
-               boost::adjacent_vertices(neighbor, graph))) {
-        neighborsneighbors.push_back(nn);
+    auto neighbors = adjacent_vertices(node, graph);
+    std::vector<VertexType> neighborsNeighbors = {};
+    for (auto neighbor : make_iterator_range(neighbors)) {
+      neighborsNeighbors.push_back(neighbor);
+      for (auto nn : make_iterator_range(adjacent_vertices(neighbor, graph))) {
+        neighborsNeighbors.push_back(nn);
       }
     }
 
     // Get the colors of the neighbors
     vector<ColorType> neighborColors;
-    for (auto neighbor : neighborsneighbors)
-      neighborColors.push_back(coloring[neighbor]);
+    for (auto neighbor : neighborsNeighbors)
+      neighborColors.push_back(get(*colorIter, neighbor));
 
     // Find the smallest color not used by any of its neighbors
     ColorType color;
-    for (color = 0; color < boost::num_vertices(graph); color++)
+    for (color = 0; color < num_vertices(graph); color++)
       if (find(neighborColors.begin(), neighborColors.end(), color) ==
           neighborColors.end())
         break;
 
-    boost::put(coloring, node, color);
+    put(*colorIter, node, color);
     numColors = max(numColors, color + 1);
   }
   return numColors;
 }
 
-OutType BasicParallel::computeColoring(Graph graph) {
-  ColorMap coloring = getEmptyColorMap(graph);
-  VertexIteratorRange identity_ordering = boost::vertices(graph);
+OutType computeColoringGeneral(Graph graph,
+    function<ColorType(
+        Graph graph, ColorVector colorVec, VertexIteratorRange indices)>
+        coloringFunction) {
+  unique_ptr<ColorVector> colorVec =
+      make_unique<ColorVector>(num_vertices(graph));
+  VertexIteratorRange identityOrdering = vertices(graph);
 
-  std::vector<VertexIteratorRange> index_iterators = {identity_ordering};
+  std::vector<VertexIteratorRange> indexIterators = {identityOrdering};
   ColorType numColors = std::numeric_limits<ColorType>::max();
 #pragma omp parallel for reduction(min : numColors)
-  for (auto &indices : index_iterators) {
-    ColorMap local_coloring = getEmptyColorMap(graph);
-    ColorType local_numColors =
-        sequenceDependentGreedyColoring(graph, local_coloring, indices);
+  for (auto &indices : indexIterators) {
+    auto localColorVec = make_unique<ColorVector>(num_vertices(graph));
+    ColorType localNumColors = coloringFunction(graph, *localColorVec, indices);
 #pragma omp critical
     {
-      if (local_numColors < numColors) {
-        coloring = local_coloring;
-        numColors = local_numColors;
+      if (localNumColors < numColors) {
+        colorVec = std::move(localColorVec);
+        numColors = localNumColors;
       }
     }
   }
-  return {numColors, coloring};
+  return {numColors, std::move(colorVec)};
+}
+
+OutType BasicParallel::computeColoring(Graph graph) {
+  return computeColoringGeneral(graph, sequenceDependentGreedyColoring);
 }
 
 OutType BasicParallel::computeDist2Coloring(Graph graph) {
-  ColorMap coloring = getEmptyColorMap(graph);
-  VertexIteratorRange identity_ordering = boost::vertices(graph);
-
-  std::vector<VertexIteratorRange> index_iterators = {identity_ordering};
-  ColorType numColors = std::numeric_limits<ColorType>::max();
-#pragma omp parallel for reduction(min : numColors)
-  for (auto &indices : index_iterators) {
-    ColorMap local_coloring = getEmptyColorMap(graph);
-    ColorType local_numColors =
-        sequenceDependentGreedyDist2Coloring(graph, local_coloring, indices);
-#pragma omp critical
-    {
-      if (local_numColors < numColors) {
-        coloring = local_coloring;
-        numColors = local_numColors;
-      }
-    }
-  }
-  return {numColors, coloring};
+  return computeColoringGeneral(graph, sequenceDependentGreedyDist2Coloring);
 }

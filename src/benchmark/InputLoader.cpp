@@ -37,16 +37,15 @@ InputLoader::~InputLoader() {
   }
 }
 
-void InputLoader::load(bool useCache) {
-  // TODO: Load only matrices defined in targets
+void InputLoader::load(vector<string> subsetIds, bool useGraphCache) {
   loadSubsets();
   if (subsets->empty()) {
     cout << "No subsets found in " << Paths::subsets << endl;
     return;
   }
-  loadIndex();
-  indexToGraphs(useCache);
-  loadDatasets();
+  loadIndex(subsetIds);
+  indexToGraphs(useGraphCache);
+  loadDatasets(subsetIds);
 }
 
 map<string, Graph> InputLoader::getDataset(string id) {
@@ -59,14 +58,25 @@ map<string, Graph> InputLoader::getDataset(string id) {
   return (*datasets)[id];
 }
 
-void InputLoader::loadIndex() {
-  map<string, SuiteSparseMatrix *> index;
+void InputLoader::loadIndex(vector<string> subsetIds) {
+  // Gather matrix IDs from subsets
+  std::unordered_set<string> matrixIds;
+  for (const auto &[subsetName, subset] : *subsets) {
+    if (find(subsetIds.begin(), subsetIds.end(), subsetName) == subsetIds.end())
+      continue;
+    for (const string &matrixId : subset) {
+      matrixIds.insert(matrixId);
+    }
+  }
 
   // Load index from file
+  map<string, SuiteSparseMatrix *> index;
   std::ifstream f(Paths::subsets / "index.json");
   json data = json::parse(f);
   for (const auto &matrix : data) {
     string id = matrix["id"];
+    if (matrixIds.find(id) == matrixIds.end())
+      continue;
     string name = matrix["name"];
     string group = matrix["group"];
     string filepath = matrix["filepath"];
@@ -165,7 +175,7 @@ void InputLoader::indexToGraphs(bool useCache) {
   this->graphs = graphs;
 }
 
-void InputLoader::loadDatasets() {
+void InputLoader::loadDatasets(vector<string> subsetIds) {
   if (!subsets.has_value() || !graphs.has_value()) {
     cout << "Subsets or graphs not loaded. Call loadSubsets() and "
             "indexToGraphs() first."
@@ -174,7 +184,8 @@ void InputLoader::loadDatasets() {
   }
 
   map<string, map<string, Graph>> datasets;
-  for (const auto &[subsetName, subset] : *subsets) {
+  for (const auto &subsetName : subsetIds) {
+    const auto subset = subsets->at(subsetName);
     map<string, Graph> dataset;
     for (const string &matrixId : subset) {
       if (graphs->find(matrixId) == graphs->end()) {

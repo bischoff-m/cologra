@@ -10,4 +10,4 @@
  * @param graph Graph to save
  * @param coloring Coloring of the graph
  */
-void graphToDot(std::filesystem::path outfile, Graph graph, ColorMap coloring);
+void graphToDot(std::filesystem::path outfile, Graph graph, ColorVector colorVec);

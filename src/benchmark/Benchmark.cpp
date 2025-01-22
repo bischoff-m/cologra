@@ -35,7 +35,13 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
 
   if (world.rank() == 0) {
     cout << "Starting benchmark" << endl;
-    loader.load();
+
+    // Load data for given datasetIds
+    vector<string> datasetIds;
+    for (const auto &target : targets)
+      for (const auto &datasetId : target.datasetIds)
+        datasetIds.push_back(datasetId);
+    loader.load(datasetIds);
   }
 
   for (const auto &target : targets) {
@@ -65,8 +71,6 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
         ProgressBarIterator<Graph> progressBar(dataset.begin(), dataset.end());
         while (progressBar.begin() != progressBar.end()) {
           auto &[matrixId, graph] = progressBar.next();
-          vector<VerticesSizeType> colorVec(boost::num_vertices(graph));
-          ColorMap coloring(&colorVec.front(), get(vertex_index, graph));
           VerticesSizeType numColors = 0;
           int64_t duration = 0;
           bool didFail = false;
@@ -110,7 +114,6 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
       if (world.rank() == 0) {
         algorithm->stopIfParallel();
       }
-      delete algorithm;
     }
     if (world.rank() == 0) {
       BenchmarkResult::writeMultiple(results, target);

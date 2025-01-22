@@ -20,6 +20,7 @@ don't need to install it.
 sudo apt-get install cmake
 sudo apt-get install openmpi-bin openmpi-common libopenmpi-dev
 sudo apt-get install clang-format
+sudo apt-get install valgrind valgrind-mpi
 ```
 
 ## Usage
