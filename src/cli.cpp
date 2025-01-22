@@ -104,8 +104,12 @@ int main(int argc, char **argv)
         degeneracy_graph(graph, k);
     }
 
-
-    json params = json::parse(cmdl("--params", "").str());
+    if (cmdl["--params"])){
+        json params = json::parse(cmdl("--params", "").str());
+    }
+    else{
+        json params = {};
+    }
     ColoringAlgorithm * algo =  createAlgorithm(cmdl({"-a", "--algorithm"}).str(), params);
 
     
