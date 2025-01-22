@@ -13,7 +13,7 @@ wheels = [
 [[package]]
 name = "colograpy"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "humanize" },
     { name = "matplotlib" },

@@ -1,19 +1,8 @@
 # %%
 
 import matplotlib.pyplot as plt
-from benchmark_data import Benchmark, BenchmarkResult
-from definitions import Paths
-
-plt.rc("axes", axisbelow=True)
-(Paths.shared / "plots").mkdir(exist_ok=True)
-benchmarks = Benchmark.fromFiles(Paths.shared / "benchmarks")
-
-results: list[tuple[str, BenchmarkResult]] = []
-for name, benchmark in benchmarks.items():
-    for result in benchmark.results:
-        results.append((name, result))
-
-results_small = [result for _, result in results if result.datasetId == "small_mtx"]
+from benchmark.benchmark_data import Benchmark, BenchmarkResult
+from benchmark.definitions import Paths
 
 
 def plot_permut_to_colors(results: list[BenchmarkResult], lines: dict[str, int] = {}):
@@ -35,22 +24,6 @@ def plot_permut_to_colors(results: list[BenchmarkResult], lines: dict[str, int] 
     plt.close()
 
 
-rpq_results = [
-    result for result in results_small if result.algorithmId == "RandomPermutationQueue"
-]
-other_results = {
-    "BoostSequential": float("inf"),
-    "OrderedSequential": float("inf"),
-}
-for result in results_small:
-    if result.algorithmId in other_results:
-        other_results[result.algorithmId] = min(
-            other_results[result.algorithmId], result.aggregated.sumNumColors
-        )
-
-plot_permut_to_colors(rpq_results, other_results)
-
-
 def plot_time_compare(results: list[BenchmarkResult]):
     """Plot aggregated.totalTimeNs as a bar plot"""
     # Order by total time
@@ -65,17 +38,6 @@ def plot_time_compare(results: list[BenchmarkResult]):
     plt.tight_layout()
     plt.savefig(Paths.plots / "time_compare.pdf")
     plt.close()
-
-
-time_benchmark = benchmarks["benchmark_2025-01-09_19-21-28_e04478"]
-time_benchmark2 = benchmarks["benchmark_2025-01-09_23-37-33_15f06b"]
-time_small = [
-    result for result in time_benchmark.results if result.datasetId == "small_mtx"
-]
-time_medium = [
-    result for result in time_benchmark2.results if result.datasetId == "medium_mtx"
-]
-plot_time_compare(time_medium)
 
 
 def plot_num_permutations(results: list[BenchmarkResult]):
@@ -99,9 +61,51 @@ def plot_num_permutations(results: list[BenchmarkResult]):
     plt.close()
 
 
-results = [
-    result
-    for result in rpq_results
-    if result.parameters["heuristic"] == "maxDegreeFirst"
-]
-plot_num_permutations(results)
+def main():
+    print("This is not implemented yet.")
+    return
+
+    plt.rc("axes", axisbelow=True)
+    (Paths.shared / "plots").mkdir(exist_ok=True)
+    benchmarks = Benchmark.fromFiles(Paths.shared / "benchmarks")
+
+    results: list[tuple[str, BenchmarkResult]] = []
+    for name, benchmark in benchmarks.items():
+        for result in benchmark.results:
+            results.append((name, result))
+
+    results_small = [result for _, result in results if result.datasetId == "small_mtx"]
+
+    rpq_results = [
+        result
+        for result in results_small
+        if result.algorithmId == "RandomPermutationQueue"
+    ]
+    other_results = {
+        "BoostSequential": float("inf"),
+        "OrderedSequential": float("inf"),
+    }
+    for result in results_small:
+        if result.algorithmId in other_results:
+            other_results[result.algorithmId] = min(
+                other_results[result.algorithmId], result.aggregated.sumNumColors
+            )
+
+    plot_permut_to_colors(rpq_results, other_results)
+
+    # time_benchmark = benchmarks["benchmark_2025-01-09_19-21-28_e04478"]
+    time_benchmark2 = benchmarks["benchmark_2025-01-09_23-37-33_15f06b"]
+    # time_small = [
+    #     result for result in time_benchmark.results if result.datasetId == "small_mtx"
+    # ]
+    time_medium = [
+        result for result in time_benchmark2.results if result.datasetId == "medium_mtx"
+    ]
+    plot_time_compare(time_medium)
+
+    results = [
+        result
+        for result in rpq_results
+        if result.parameters["heuristic"] == "maxDegreeFirst"
+    ]
+    plot_num_permutations(results)

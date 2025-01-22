@@ -2,10 +2,10 @@ import humanize
 
 # Import targets file to let the decorator @subset register the functions. This
 # must be done before importing the subset_functions variable.
-import targets  # noqa: F401
-from util.download import download_matrices, remove_unused
-from util.ss_index import index_available
-from util.subsets import create_subsets
+import suitesparse.targets  # noqa: F401
+from suitesparse.util.download import download_matrices, remove_unused
+from suitesparse.util.ss_index import index_available
+from suitesparse.util.subsets import create_subsets
 
 
 def main():

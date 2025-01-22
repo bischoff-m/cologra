@@ -41,9 +41,9 @@ https://sparse.tamu.edu/statistics
 """
 
 import pandas as pd
-from util.definitions import MatrixFormats
-from util.ss_index import index_available
-from util.subsets import subset
+from suitesparse.util.definitions import MatrixFormats
+from suitesparse.util.ss_index import index_available
+from suitesparse.util.subsets import subset
 
 
 @subset("small_mtx")
@@ -77,6 +77,15 @@ def subset_medium_mtx(df: pd.DataFrame) -> pd.DataFrame:
     df = df[(df["nnz"] < 2e4) & (df["nnz"] > 1e4)]
     df = df[df["isReal"]]
     return df.sample(n=5, random_state=42)
+
+
+@subset("only_netz4504")
+def subset_only_netz4504(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df["format"] == MatrixFormats.MATRIX_MARKET.value]
+    df = df[df["group"] == "AG-Monien"]
+    df = df[df["name"] == "netz4504"]
+    assert len(df) == 1
+    return df
 
 
 if __name__ == "__main__":
