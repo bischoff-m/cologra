@@ -1,5 +1,5 @@
 import pandas as pd
-from util.definitions import Paths
+from suitesparse.util.definitions import Paths
 
 subset_functions = dict()
 

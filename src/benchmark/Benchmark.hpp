@@ -12,7 +12,7 @@
 using namespace std;
 using json = nlohmann::json;
 
-typedef std::function<ColoringAlgorithm *(string id, json params)>
+typedef function<unique_ptr<ColoringAlgorithm>(string id, json params)>
     AlgorithmFactory;
 
 class Benchmark {

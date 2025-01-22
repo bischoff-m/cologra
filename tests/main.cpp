@@ -14,7 +14,8 @@
 class SampleGraph : public ::testing::Test {
 public:
   Graph graph;
-  ColorMap coloring;
+  ColorVector colorVec;
+  ColorIterator colorIter;
 
   SampleGraph() {
     enum nodes { A, B, C, D, E, n };
@@ -32,12 +33,9 @@ public:
   }
 
   void SetUp() {
-    colorVec = std::vector<VerticesSizeType>(boost::num_vertices(graph));
-    coloring = ColorMap(&colorVec.front(), get(vertex_index, graph));
+    colorVec = ColorVector(num_vertices(graph));
+    colorIter = ColorIterator(&colorVec.front(), get(vertex_index, graph));
   }
-
-private:
-  std::vector<VerticesSizeType> colorVec;
 };
 
 TEST_F(SampleGraph, GreedyColoring) {
@@ -47,17 +45,17 @@ TEST_F(SampleGraph, GreedyColoring) {
 }
 
 TEST_F(SampleGraph, IsDistance1Coloring) {
-  EXPECT_FALSE(isDistance1Coloring(graph, coloring));
+  EXPECT_FALSE(isDistance1Coloring(graph, this->colorVec));
   ColoringAlgorithm *algorithm = new BasicSequential();
   OutType res = algorithm->computeColoring(graph);
-  EXPECT_TRUE(isDistance1Coloring(graph, res.second));
+  EXPECT_TRUE(isDistance1Coloring(graph, *res.second));
 }
 
 TEST_F(SampleGraph, GraphToDot) {
-  sequential_vertex_coloring(graph, coloring);
+  sequential_vertex_coloring(graph, colorIter);
 
   std::filesystem::path file("graph.dot");
-  graphToDot(file, graph, coloring);
+  graphToDot(file, graph, colorVec);
   EXPECT_TRUE(std::filesystem::exists(file));
 
   std::filesystem::remove(file);
@@ -79,8 +77,8 @@ TEST(MatrixToGraph, ColumnIntersectionGraph) {
   mat.insert(2, 0) = 1;
   mat.insert(3, 1) = 1;
   Graph graph = columnIntersectionGraph(mat);
-  EXPECT_EQ(boost::num_vertices(graph), 4);
-  EXPECT_EQ(boost::num_edges(graph), 2);
+  EXPECT_EQ(num_vertices(graph), 4);
+  EXPECT_EQ(num_edges(graph), 2);
 }
 
 TEST(MatrixToGraph, AdjacencyGraph) {
@@ -97,8 +95,8 @@ TEST(MatrixToGraph, AdjacencyGraph) {
   mat.insert(0, 3) = 1;
 
   Graph graph = adjacencyGraph(mat);
-  EXPECT_EQ(boost::num_vertices(graph), 4);
-  EXPECT_EQ(boost::num_edges(graph), 2);
+  EXPECT_EQ(num_vertices(graph), 4);
+  EXPECT_EQ(num_edges(graph), 2);
 }
 
 TEST(MatrixToGraph, AdjacencyGraph2) {
@@ -119,8 +117,8 @@ TEST(MatrixToGraph, AdjacencyGraph2) {
   mat.insert(2, 3) = 1;
 
   Graph graph = adjacencyGraph(mat);
-  EXPECT_EQ(boost::num_vertices(graph), 4);
-  EXPECT_EQ(boost::num_edges(graph), 4);
+  EXPECT_EQ(num_vertices(graph), 4);
+  EXPECT_EQ(num_edges(graph), 4);
 }
 
 int main(int argc, char **argv) {

@@ -1,6 +1,7 @@
 #include "RandomPermutationQueue.hpp"
 #include "../../Heuristic.hpp"
 #include "../../definitions.hpp"
+#include "../../util/coloring.hpp"
 // TODO: Code breaks without this cpp include, why?
 #include "ResultOrException.cpp"
 #include "ResultOrException.hpp"
@@ -11,7 +12,6 @@
 #include <boost/serialization/vector.hpp>
 #include <fmt/core.h>
 #include <random>
-#include "../../util/coloring.hpp"
 
 using namespace boost;
 
@@ -65,9 +65,7 @@ vector<int> samplePermutationUniform(int size) {
   return result;
 }
 
-OutType RandomPermutationQueue::computeColoring(
-    Graph graph) {
-  ColorMap coloring = getEmptyColorMap(graph);
+OutType RandomPermutationQueue::computeColoring(Graph graph) {
   mpi::communicator world;
   if (world.rank() != 0) {
     throw invalid_argument("This algorithm assumes that computeColoring is "
@@ -111,8 +109,7 @@ OutType RandomPermutationQueue::computeColoring(
 
   while (!all_of(isIdle.begin(), isIdle.end(), [](bool b) { return b; })) {
     // Handle incoming messages
-    std::pair<mpi::status, std::vector<mpi::request>::iterator> result =
-        mpi::wait_any(requests.begin(), requests.end());
+    auto result = mpi::wait_any(requests.begin(), requests.end());
 
     int i = result.second - requests.begin();
     if (result.first.tag() != Message::RESULT)
@@ -135,11 +132,7 @@ OutType RandomPermutationQueue::computeColoring(
     request.cancel();
   }
 
-  // Copy best coloring to output
-  for (auto it = vertices(graph).first; it != vertices(graph).second; it++) {
-    coloring[*it] = bestColoring[*it];
-  }
-  return {bestNumColors, coloring};
+  return {bestNumColors, make_unique<ColorVector>(bestColoring)};
 }
 
 void RandomPermutationQueue::stopIfParallel() {
@@ -159,24 +152,18 @@ ResultOrException computeColoringOrdered(
     return ResultOrException("Order size does not match number of vertices");
   }
 
-  vector<VerticesSizeType> orderVec(boost::num_vertices(graph));
-  ColorMap orderMap(&orderVec.front(), get(vertex_index, graph));
-  for (int i = 0; i < order.size(); i++) {
-    orderMap[i] = order[i];
-  }
+  mpi::communicator world;
+  auto orderIter = getEmptyColoring(graph, order);
+  auto [colorVec, colorIter] = getEmptyColoring(graph);
 
   try {
-    // Initialize empty coloring
-    vector<VerticesSizeType> colorVec(boost::num_vertices(graph));
-    ColorMap coloring(&colorVec.front(), get(vertex_index, graph));
-
     // Solve coloring
     VerticesSizeType numColors =
-        sequential_vertex_coloring(graph, orderMap, coloring);
+        sequential_vertex_coloring(graph, *orderIter, *colorIter);
 
     vector<ColorType> coloringVec;
     for (auto it = vertices(graph).first; it != vertices(graph).second; it++) {
-      coloringVec.push_back(coloring[*it]);
+      coloringVec.push_back(get(*colorIter, *it));
     }
     return ResultOrException(numColors, coloringVec);
   } catch (const std::exception &e) {

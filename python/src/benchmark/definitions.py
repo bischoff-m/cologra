@@ -1,11 +1,14 @@
 from enum import Enum
 from pathlib import Path
 
+# TODO: Join this file with the same from suitesparse
+
 
 class Paths:
-    data = Path(__file__).parent.parent.parent.parent / "shared"
-    matrices = data / "matrices"
-    subsets = data / "subsets"
+    shared = Path(__file__).parent.parent.parent.parent / "shared"
+    matrices = shared / "matrices"
+    subsets = shared / "subsets"
+    plots = shared / "plots"
 
 
 class MatrixFormats(Enum):

@@ -44,10 +44,13 @@ build:
 	( cmake --preset=vcpkg && cmake --build build --config Release -j${JOBS} )
 
 run: build
-	- mpirun -np 3 build/src/cologra_cli
+	- mpirun -np 8 build/src/cologra_cli
 
 debug:
-	( cd build && cmake -DCMAKE_BUILD_TYPE=Debug .. --preset=vcpkg && cmake --build . --config Release -j${JOBS} )
+	( cmake -DCMAKE_BUILD_TYPE=Debug --preset=vcpkg && cmake --build build --config Debug -j${JOBS} )
+
+run-debug: debug
+	- mpirun -np 3 valgrind --track-origins=yes --leak-check=yes --num-callers=100 --log-file=output%p.txt build/src/cologra_cli
 
 test: build
 	( cd build/tests && ctest . || ctest . --rerun-failed --output-on-failure )

@@ -1,10 +1,24 @@
 [project]
-name = "suitesparse-cologra"
+name = "colograpy"
 version = "0.1.0"
 description = "Automated downloader for matrices from the SuiteSparse Matrix Collection"
 requires-python = ">=3.12"
 dependencies = [
     "humanize>=4.11.0",
+    "matplotlib>=3.10.0",
     "pandas>=2.2.3",
+    "pydantic>=2.10.5",
     "tqdm>=4.67.1",
 ]
+
+[project.scripts]
+benchmark = "benchmark.main:main"
+suitesparse = "suitesparse.main:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["benchmark", "suitesparse"]
+package-dir = { "" = "src" }

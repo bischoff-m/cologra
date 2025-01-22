@@ -20,6 +20,7 @@ don't need to install it.
 sudo apt-get install cmake
 sudo apt-get install openmpi-bin openmpi-common libopenmpi-dev
 sudo apt-get install clang-format
+sudo apt-get install valgrind valgrind-mpi
 ```
 
 ## Usage
@@ -122,4 +123,19 @@ sudo apt-get install gdb
     }
   ]
 }
+```
+
+## Errors
+
+When trying to run on the cluster, I got the following error:
+
+```shell
+build/src/cologra_cli: symbol lookup error: build/src/cologra_cli: undefined symbol: __libm_feature_flag
+```
+
+To fix this, I compiled using `GCCcore/.11.3.0` instead of the standard
+compiler. To unload the Intel compiler, use:
+
+```shell
+module unload intel-compilers/2022.1.0
 ```

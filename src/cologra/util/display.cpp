@@ -130,7 +130,8 @@ RGB hsv2rgb(HSV in) {
   return out;
 }
 
-void graphToDot(std::filesystem::path outfile, Graph graph, ColorMap coloring) {
+void graphToDot(
+    std::filesystem::path outfile, Graph graph, ColorVector colorVec) {
   // Copy Graph to DisplayGraph
   DisplayGraph displayGraph(num_vertices(graph));
   graph_traits<Graph>::edge_iterator ei, ei_end;
@@ -143,13 +144,13 @@ void graphToDot(std::filesystem::path outfile, Graph graph, ColorMap coloring) {
   // Get highest color value
   double maxColor = 0;
   for (auto node : make_iterator_range(vertices(displayGraph)))
-    maxColor = max(maxColor, (double)get(coloring, node));
+    maxColor = max(maxColor, (double)colorVec[node]);
 
   // Set vertexInfo for each vertex
   double hueStep = 360.0 / (maxColor + 1);
   for (auto node : make_iterator_range(vertices(displayGraph))) {
     HSV hsv;
-    hsv.h = hueStep * get(coloring, node);
+    hsv.h = hueStep * colorVec[node];
     hsv.s = saturation;
     hsv.v = value;
     RGB rgb = hsv2rgb(hsv);

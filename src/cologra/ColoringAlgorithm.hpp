@@ -45,7 +45,6 @@ public:
    * @return Number of colors used
    */
   virtual OutType computeColoring(Graph graph) = 0;
-  //virtual OutType computeDist2Coloring(Graph graph) = 0;
 
   /**
    * This method will be called before every call to computeColoring to allow

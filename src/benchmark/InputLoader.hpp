@@ -16,14 +16,14 @@ private:
   std::optional<map<string, Graph>> graphs;
   std::optional<map<string, map<string, Graph>>> datasets;
 
-  void loadIndex();
+  void loadIndex(vector<string> subsetIds);
   void loadSubsets();
   void indexToGraphs(bool useCache = false);
-  void loadDatasets();
+  void loadDatasets(vector<string> subsetIds);
 
 public:
   InputLoader();
   ~InputLoader();
-  void load(bool useCache = false);
+  void load(vector<string> subsetIds, bool useGraphCache = false);
   map<string, Graph> getDataset(string id);
 };

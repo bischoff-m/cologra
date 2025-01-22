@@ -1,25 +1,26 @@
 #pragma once
 
 #include "../ColoringAlgorithm.hpp"
-#include <fmt/core.h>
-#include "../algorithms/BasicSequential.hpp"
 #include "../algorithms/BasicParallel.hpp"
-#include "../algorithms/OrderedSequential.hpp"
+#include "../algorithms/BasicSequential.hpp"
 #include "../algorithms/BoostSequential.hpp"
+#include "../algorithms/OrderedSequential.hpp"
 #include "../algorithms/RandomPermutationQueue/RandomPermutationQueue.hpp"
+#include <fmt/core.h>
 
+using namespace std;
 
-ColoringAlgorithm *createAlgorithm(string id, json params) {
+unique_ptr<ColoringAlgorithm> createAlgorithm(string id, json params) {
   if (id == "BasicSequential") {
-    return new BasicSequential();
+    return make_unique<BasicSequential>();
   } else if (id == "BoostSequential") {
-    return new BoostSequential();
+    return make_unique<BoostSequential>();
   } else if (id == "OrderedSequential") {
-    return new OrderedSequential(params);
+    return make_unique<OrderedSequential>(params);
   } else if (id == "BasicParallel") {
-    return new BasicParallel();
+    return make_unique<BasicParallel>();
   } else if (id == "RandomPermutationQueue") {
-    return new RandomPermutationQueue(params);
+    return make_unique<RandomPermutationQueue>(params);
   } else {
     throw invalid_argument(fmt::format("Algorithm {} not found", id));
   }

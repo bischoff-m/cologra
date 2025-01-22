@@ -3,7 +3,7 @@ from datetime import datetime
 from urllib.request import urlopen
 
 import pandas as pd
-from util.definitions import MatrixFormats, Paths
+from suitesparse.util.definitions import MatrixFormats, Paths
 
 SS_URL_BASE = "https://sparse.tamu.edu"
 SS_URL_STATS = f"{SS_URL_BASE}/files/ssstats.csv"
@@ -19,7 +19,7 @@ def get_ssstats() -> str:
     str
         Content of the ssstats.csv file.
     """
-    filepath = Paths.data / "ssstats.csv"
+    filepath = Paths.shared / "ssstats.csv"
     if filepath.exists():
         date_modified = datetime.fromtimestamp(filepath.lstat().st_mtime)
         if datetime.now() - date_modified < pd.Timedelta(weeks=4):
@@ -65,7 +65,7 @@ def index_available() -> pd.DataFrame:
     # used here
     # https://github.com/jlblancoc/suitesparse-metis-for-windows/blob/master/SuiteSparse/ssget/ssgui.java
 
-    df = pd.read_csv(Paths.data / "ssstats.csv", skiprows=2, header=None)
+    df = pd.read_csv(Paths.shared / "ssstats.csv", skiprows=2, header=None)
     if df.shape[1] != 13:
         raise ValueError(
             "File ssstats.csv does not have the expected format. "

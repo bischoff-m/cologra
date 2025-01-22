@@ -2,7 +2,7 @@ from pathlib import Path
 from urllib.request import urlretrieve
 
 import pandas as pd
-from util.definitions import Paths
+from suitesparse.util.definitions import Paths
 from tqdm import tqdm
 from shutil import unpack_archive
 

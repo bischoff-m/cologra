@@ -13,7 +13,7 @@ Graph columnIntersectionGraph(const Eigen::SparseMatrix<double> &matrix);
 
 /**
  * Compute the undirect graph interpreting the matrix as adjacency matrix.
- * 
+ *
  * @param matrix Input matrix
  * @return adjacency graph
  */
