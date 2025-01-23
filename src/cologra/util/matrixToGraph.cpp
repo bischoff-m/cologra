@@ -25,6 +25,30 @@ Graph columnIntersectionGraph(const Eigen::SparseMatrix<double> &matrix) {
   return graph;
 }
 
+Graph rowIntersectionGraph(const Eigen::SparseMatrix<double> &matrix) {
+  int numRows = matrix.rows();
+  Graph graph(numRows);
+
+  // Iterate through each row
+  for (int col = 0; col < matrix.cols(); col++) {
+    std::unordered_set<int> rowsNonZero;
+
+    // Find columns with non-zero entries in the row
+    for (int row = 0; row < numRows; row++)
+      if (matrix.coeff(row, col) != 0)
+        rowsNonZero.insert(row);
+
+    // Add edges between columns with non-zero entries in the same row
+    for (auto it1 = rowsNonZero.begin(); it1 != rowsNonZero.end(); it1++)
+      for (auto it2 = std::next(it1); it2 != rowsNonZero.end(); it2++)
+        // Only add an edge if it does not already exist
+        if (!boost::edge(*it1, *it2, graph).second)
+          boost::add_edge(*it1, *it2, graph);
+  }
+
+  return graph;
+}
+
 Graph adjacencyGraph(const Eigen::SparseMatrix<double> &matrix) {
   if (matrix.rows() != matrix.cols()) {
     printf("Matrix not square\n");

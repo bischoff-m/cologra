@@ -65,12 +65,17 @@ int main(int argc, char **argv) {
                  "k-degeneracy Graph. If the result is a "
               << std::endl;
     std::cout
-        << "--columnIntersectionGraph, --columnwise\t\t chenges the first step "
+        << "--columnIntersectionGraph, --columnwise\t\t changes the first step "
            "by creating a CIG instead of interpreting the matrix as adjacency "
            "matrix. For compression, this option compresses columnwise"
         << std::endl;
-    std::cout << "--adjacencyGraph\t\t chenges the first step by creating a "
-                 "CIG instead of interpreting the matrix as adjacency matrix"
+    std::cout
+        << "--rowIntersectionGraph, --rowwise\t\t changes the first step "
+           "by creating a RIG instead of interpreting the matrix as adjacency "
+           "matrix. For compression, this option compresses rowwise"
+        << std::endl;
+    std::cout << "--adjacencyGraph\t\t changes the first step by "
+                 "interpreting the matrix as adjacency matrix"
               << std::endl;
     return 0;
   }
@@ -112,6 +117,8 @@ int main(int argc, char **argv) {
 
   if (cmdl["--columnIntersectionGraph", "--columnwise"]) {
     graph = columnIntersectionGraph(matrix);
+  } else if (cmdl["--rowIntersectionGraph", "--rowwise"]) {
+    graph = rowIntersectionGraph(matrix);
   } else if (cmdl["--adjacencyGraph"]) {
     graph = adjacencyGraph(matrix);
   } else {
@@ -135,17 +142,17 @@ int main(int argc, char **argv) {
     degeneracyGraph(graph, k);
   }
 
-  if (cmdl["--params"]) {
+  if (cmdl("--params", "").str()!="") {
     if (make_verbose){
       std::cout << "Parameters:"<< std::endl;
-      std::cout << cmdl("--params").str()<< std::endl;
+      std::cout << cmdl("--params", "").str()<< std::endl;
     }
     params = json::parse(cmdl("--params").str());
     if (make_verbose){
       std::cout << params << std::endl;
     }
   } else {
-    params = {};
+    params = {"heuristic", "maxDegreeFirst"};
   }
   unique_ptr<ColoringAlgorithm> algo =
       createAlgorithm(cmdl({"-a", "--algorithm"}, "BasicSequential").str(), params);
@@ -172,6 +179,19 @@ int main(int argc, char **argv) {
     if (cmdl["--columnIntersectionGraph", "--columnwise"])
     {
       Eigen::SparseMatrix<double> compressed_matrix = compressMatrixColumnwise(matrix, result);
+      if (make_verbose){
+        std::cout << "Original Matrix Size:" << std::endl;
+        std::cout << matrix.rows() << " rows" << std::endl;
+        std::cout << matrix.cols() << " columns" << std::endl;
+        std::cout << "Compressed Matrix Size:" << std::endl;
+        std::cout << compressed_matrix.rows() << " rows" << std::endl;
+        std::cout << compressed_matrix.cols() << " columns" << std::endl;
+      }
+      writeMatrixMarket(outfile, compressed_matrix);
+    }
+    if (cmdl["--rowIntersectionGraph", "--rowwise"])
+    {
+      Eigen::SparseMatrix<double> compressed_matrix = compressMatrixRowwise(matrix, result);
       if (make_verbose){
         std::cout << "Original Matrix Size:" << std::endl;
         std::cout << matrix.rows() << " rows" << std::endl;
