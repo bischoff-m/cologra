@@ -10,3 +10,10 @@ Eigen::SparseMatrix<double> readMatrixMarket(std::filesystem::path infile) {
   f.close();
   return mat;
 }
+
+
+void writeMatrixMarket(std::filesystem::path outfile, Eigen::SparseMatrix<double> mat){
+  std::ofstream f(outfile.string());
+  fast_matrix_market::write_matrix_market_eigen(f, mat);
+  f.close();
+}

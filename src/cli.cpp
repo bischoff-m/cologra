@@ -9,12 +9,14 @@
 #include "cologra/util/degeneracy.hpp"
 #include "cologra/util/matrixIO.hpp"
 #include "cologra/util/matrixToGraph.hpp"
+#include "cologra/util/matrixCompression.hpp"
 #include <Eigen/SparseCore>
 #include <argh.h>
 #include <boost/mpi.hpp>
 #include <boost/mpi/environment.hpp>
 #include <filesystem>
 #include <iostream>
+#include <fstream>
 #include <nlohmann/json.hpp>
 
 using namespace cologra;
@@ -50,7 +52,7 @@ int main(int argc, char **argv) {
               << std::endl;
     std::cout << "FLAGS:" << std::endl;
     std::cout << "-h, --help\t\t prints this message" << std::endl;
-    std::cout << "-h, --verbose\t\t prints some stuff" << std::endl;
+    std::cout << "-v, --verbose\t\t prints some stuff" << std::endl;
     std::cout << "-i, --input <path_to_file>\t\t specify input file"
               << std::endl;
     std::cout
@@ -114,9 +116,9 @@ int main(int argc, char **argv) {
     graph = adjacencyGraph(matrix);
   } else {
     if (cmdl(1).str() == "compress") {
-      std::cout << "No compression direction given, using columnwise"
+      std::cout << "No valid compression direction given! Add e.g. the flag --columnwise for columnwise compression. Otherwise look for --help"
                 << std::endl;
-      graph = columnIntersectionGraph(matrix);
+      return 0;
     } else {
       std::cout << "No matrix interpretation given, using Adjacency Graph"
                 << std::endl;
@@ -132,13 +134,21 @@ int main(int argc, char **argv) {
   if (cmdl["--use-degeneracy"] >> k) {
     degeneracyGraph(graph, k);
   }
+
   if (cmdl["--params"]) {
-    params = json::parse(cmdl("--params", "").str());
+    if (make_verbose){
+      std::cout << "Parameters:"<< std::endl;
+      std::cout << cmdl("--params").str()<< std::endl;
+    }
+    params = json::parse(cmdl("--params").str());
+    if (make_verbose){
+      std::cout << params << std::endl;
+    }
   } else {
     params = {};
   }
   unique_ptr<ColoringAlgorithm> algo =
-      createAlgorithm(cmdl({"-a", "--algorithm"}).str(), params);
+      createAlgorithm(cmdl({"-a", "--algorithm"}, "BasicSequential").str(), params);
 
   Coloring result = algo->computeColoring(graph);
   std::cout << result.first << " colors used" << std::endl;
@@ -147,6 +157,33 @@ int main(int argc, char **argv) {
     std::cout << (*result.second)[*it] << " ";
   }
   std::cout << std::endl;
+  if (cmdl(1).str() == "color" && outfile.string() != "") {
+    
+    std::ofstream f(outfile.string());
+    for (auto it = vertices(graph).first; it != vertices(graph).second; it++) {
+      f << (*result.second)[*it] << " ";
+    }
+    f << std::endl;
+    f << result.first;
+    f << std::endl;
+    f.close();
+  }
+  else if (cmdl(1).str() == "compress" && outfile.string() != ""){
+    if (cmdl["--columnIntersectionGraph", "--columnwise"])
+    {
+      Eigen::SparseMatrix<double> compressed_matrix = compressMatrixColumnwise(matrix, result);
+      if (make_verbose){
+        std::cout << "Original Matrix Size:" << std::endl;
+        std::cout << matrix.rows() << " rows" << std::endl;
+        std::cout << matrix.cols() << " columns" << std::endl;
+        std::cout << "Compressed Matrix Size:" << std::endl;
+        std::cout << compressed_matrix.rows() << " rows" << std::endl;
+        std::cout << compressed_matrix.cols() << " columns" << std::endl;
+      }
+      writeMatrixMarket(outfile, compressed_matrix);
+    }
+    
+  }
 
   // TODO: rebuild coloring from degenerate graph
 
