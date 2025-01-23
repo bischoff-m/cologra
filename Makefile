@@ -53,6 +53,9 @@ profile: build
 run-mpi: build
 	- mpirun -np 8 build/src/cologra_cli
 
+run-slurm: build
+	- sbatch slurm.sh
+
 debug:
 	- cmake -DCMAKE_BUILD_TYPE=Debug --preset=vcpkg
 	- cmake --build build --config Debug -j${JOBS}

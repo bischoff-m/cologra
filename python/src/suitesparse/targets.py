@@ -88,6 +88,15 @@ def subset_only_netz4504(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+@subset("small_square")
+def subset_small_square(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df["format"] == MatrixFormats.MATRIX_MARKET.value]
+    df = df[df["nrows"] == df["ncols"]]
+    df = df[df["nnz"] < 1e4]
+    df = df[df["isReal"]]
+    return df.sample(n=100, random_state=42)
+
+
 if __name__ == "__main__":
     df = index_available()
     print(df.info())

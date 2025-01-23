@@ -105,6 +105,7 @@ Coloring RandomPermutationQueue::computeColoring(Graph graph) {
       }
     }
     results[i] = ResultOrException();
+    requests[i].cancel();
     requests[i] = world.irecv(i + 1, Message::RESULT, results[i]);
   };
 
@@ -191,6 +192,7 @@ void RandomPermutationQueue::assistIfParallel() {
     // Update graph
     graph = newGraph;
     newGraph = Graph();
+    computeRequest.cancel();
     computeRequest = world.irecv(0, Message::GRAPH, newGraph);
 
     // Update sections for new graph
