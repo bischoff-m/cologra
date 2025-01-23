@@ -1,7 +1,6 @@
 #include "ResultOrException.hpp"
 
-ResultOrException::ResultOrException(
-    VerticesSizeType numColors, vector<ColorType> coloring)
+ResultOrException::ResultOrException(Vertex numColors, vector<Color> coloring)
     : numColors(numColors), coloring(coloring) {}
 
 ResultOrException::ResultOrException(string exception) : exception(exception) {}

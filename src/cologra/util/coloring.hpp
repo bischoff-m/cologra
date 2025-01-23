@@ -3,6 +3,7 @@
 #include "../definitions.hpp"
 
 using namespace std;
+using namespace cologra;
 
 /**
  * Check if the given coloring is a valid distance-1 coloring.

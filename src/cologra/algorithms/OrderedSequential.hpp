@@ -4,6 +4,8 @@
 #include "../Heuristic.hpp"
 #include "../definitions.hpp"
 
+using namespace cologra;
+
 /**
  * Uses a heuristic to order the nodes and then colors them in that order.
  */
@@ -13,5 +15,5 @@ private:
 
 public:
   OrderedSequential(const nlohmann::json &params);
-  OutType computeColoring(Graph graph) override;
+  Coloring computeColoring(Graph graph) override;
 };

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-VerticesSizeType greedyColorOrdered(
+Vertex greedyColorOrdered(
     Graph graph, ColorIterator colorIter, HeuristicOrder order) {
   // Set all entries in the coloring to -1
   for (auto node : boost::make_iterator_range(boost::vertices(graph)))
@@ -15,7 +15,7 @@ VerticesSizeType greedyColorOrdered(
   int current_node = 0;
 
   // Iterate over all nodes
-  VerticesSizeType numColors = 0;
+  Vertex numColors = 0;
   while (current_node < order.size()) {
     auto node = order.at(current_node);
     current_node++;
@@ -23,12 +23,12 @@ VerticesSizeType greedyColorOrdered(
     auto neighbors = boost::adjacent_vertices(node.node, graph);
 
     // Get the colors of the neighbors
-    vector<VerticesSizeType> neighborColors;
+    vector<Vertex> neighborColors;
     for (auto neighbor : boost::make_iterator_range(neighbors))
       neighborColors.push_back(get(colorIter, neighbor));
 
     // Find the smallest color not used by any of its neighbors
-    VerticesSizeType color;
+    Vertex color;
     for (color = 0; color < boost::num_vertices(graph); color++)
       if (find(neighborColors.begin(), neighborColors.end(), color) ==
           neighborColors.end())
@@ -49,9 +49,9 @@ OrderedSequential::OrderedSequential(const nlohmann::json &params)
   heuristicId = params["heuristic"];
 }
 
-OutType OrderedSequential::computeColoring(Graph graph) {
+Coloring OrderedSequential::computeColoring(Graph graph) {
   auto heuristic = Heuristic::fromId(heuristicId, graph);
   auto [colorVec, colorIter] = getEmptyColoring(graph);
-  ColorType numColors = greedyColorOrdered(graph, *colorIter, heuristic);
+  Color numColors = greedyColorOrdered(graph, *colorIter, heuristic);
   return {numColors, std::move(colorVec)};
 }

@@ -17,6 +17,8 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 
+using namespace cologra;
+
 int main(int argc, char **argv) {
   argh::parser cmdl;
   cmdl.add_params(
@@ -138,7 +140,7 @@ int main(int argc, char **argv) {
   unique_ptr<ColoringAlgorithm> algo =
       createAlgorithm(cmdl({"-a", "--algorithm"}).str(), params);
 
-  OutType result = algo->computeColoring(graph);
+  Coloring result = algo->computeColoring(graph);
   std::cout << result.first << " colors used" << std::endl;
 
   for (auto it = vertices(graph).first; it != vertices(graph).second; it++) {

@@ -4,20 +4,17 @@
 
 using namespace boost;
 
+namespace cologra {
+
 typedef adjacency_list<vecS, vecS, undirectedS> Graph;
-typedef uint64_t VertexType; // anything else (especially 'int') is dangerous
-typedef std::pair<VertexType, VertexType> Edge;
+typedef graph_traits<Graph>::vertices_size_type Vertex;
+typedef std::pair<Vertex, Vertex> Edge;
+typedef Vertex Color;
+typedef graph_traits<Graph>::degree_size_type Degree;
 
-// Replace by VertexType and rename to Vertex
-typedef graph_traits<Graph>::vertices_size_type VerticesSizeType;
-// Rename to Color
-typedef graph_traits<Graph>::vertices_size_type ColorType;
-typedef graph_traits<Graph>::degree_size_type DegreeType;
-typedef property_map<Graph, vertex_index_t>::const_type VertexIndexMap;
-typedef std::vector<ColorType> ColorVector;
-typedef iterator_property_map<ColorType *, VertexIndexMap> ColorIterator;
-// TODO: Rename OutType to Coloring
-typedef std::pair<ColorType, std::unique_ptr<ColorVector>> OutType;
+typedef property_map<Graph, vertex_index_t>::const_type VertexMap;
+typedef std::vector<Color> ColorVector;
+typedef iterator_property_map<Color *, VertexMap> ColorIterator;
+typedef std::pair<Color, std::unique_ptr<ColorVector>> Coloring;
 
-// typedef graph_traits<Graph>::vertices_size_type Vertex;
-// typedef Vertex Color;
+} // namespace cologra

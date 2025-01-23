@@ -3,6 +3,8 @@
 #include "../definitions.hpp"
 #include <Eigen/SparseCore>
 
+using namespace cologra;
+
 /**
  * Compute the undirected column intersection graph of the given matrix.
  *

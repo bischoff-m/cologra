@@ -5,6 +5,7 @@
 #include <boost/serialization/vector.hpp>
 
 using namespace std;
+using namespace cologra;
 
 class ResultOrException {
 private:
@@ -14,11 +15,11 @@ private:
   void serialize(Archive &ar, const unsigned int version);
 
 public:
-  VerticesSizeType numColors;
-  vector<ColorType> coloring;
+  Vertex numColors;
+  vector<Color> coloring;
   string exception;
 
-  ResultOrException(VerticesSizeType numColors, vector<ColorType> coloring);
+  ResultOrException(Vertex numColors, vector<Color> coloring);
   ResultOrException(string exception);
   ResultOrException();
 

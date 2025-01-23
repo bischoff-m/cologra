@@ -3,6 +3,8 @@
 #include "../definitions.hpp"
 #include <filesystem>
 
+using namespace cologra;
+
 /**
  * Save a graph to a DOT (Graphviz) file with the given coloring.
  *
@@ -10,4 +12,5 @@
  * @param graph Graph to save
  * @param coloring Coloring of the graph
  */
-void graphToDot(std::filesystem::path outfile, Graph graph, ColorVector colorVec);
+void graphToDot(
+    std::filesystem::path outfile, Graph graph, ColorVector colorVec);

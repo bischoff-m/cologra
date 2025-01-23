@@ -12,6 +12,7 @@
 
 using namespace std;
 using namespace std::chrono;
+using namespace cologra;
 
 MachineInfo getMachineInfo() {
   vector<string> cpuNames;
@@ -71,7 +72,7 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
         ProgressBarIterator<Graph> progressBar(dataset.begin(), dataset.end());
         while (progressBar.begin() != progressBar.end()) {
           auto &[matrixId, graph] = progressBar.next();
-          VerticesSizeType numColors = 0;
+          Vertex numColors = 0;
           int64_t duration = 0;
           bool didFail = false;
 
@@ -128,7 +129,6 @@ Benchmark Benchmark::fromJson(json targetsDefinition) {
   vector<BenchmarkTarget> parsed;
   try {
     for (const auto &target : targetsDefinition["targets"]) {
-      cout << target << endl;
       vector<string> datasetIds;
       for (const auto &datasetId : target["datasetIds"]) {
         datasetIds.push_back(datasetId);

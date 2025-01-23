@@ -4,10 +4,11 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
 
+using namespace cologra;
+
 std::vector<Graph> getConnectedComponents(Graph graph) {
-  std::vector<VertexType> component(boost::num_vertices(graph));
-  VerticesSizeType num_components =
-      boost::connected_components(graph, &component[0]);
+  std::vector<Vertex> component(boost::num_vertices(graph));
+  Vertex num_components = boost::connected_components(graph, &component[0]);
 
   std::vector<Graph> res(num_components, boost::num_vertices(graph));
   for (auto e : boost::make_iterator_range(boost::edges(graph))) {
@@ -20,7 +21,7 @@ std::vector<Graph> getConnectedComponents(Graph graph) {
   }
   // do we actually need this part with adjacency lists?
   for (Graph &g : res) {
-    for (VertexType n : boost::make_iterator_range(boost::vertices(g))) {
+    for (Vertex n : boost::make_iterator_range(boost::vertices(g))) {
       if (boost::degree(n, g) == 0) {
         boost::remove_vertex(n, g);
       }

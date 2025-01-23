@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Automated downloader for matrices from the SuiteSparse Matrix Collection"
 requires-python = ">=3.12"
 dependencies = [
+    "gprof2dot>=2024.6.6",
     "humanize>=4.11.0",
     "matplotlib>=3.10.0",
     "pandas>=2.2.3",

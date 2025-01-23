@@ -3,6 +3,8 @@
 #include "../ColoringAlgorithm.hpp"
 #include "../definitions.hpp"
 
+using namespace cologra;
+
 /**
  * Sequential vertex coloring algorithm from the Boost Graph Library. This is
  * not parallelized in any way.
@@ -14,5 +16,5 @@
 class BoostSequential : public ColoringAlgorithm {
 public:
   BoostSequential();
-  OutType computeColoring(Graph graph) override;
+  Coloring computeColoring(Graph graph) override;
 };

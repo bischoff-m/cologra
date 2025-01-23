@@ -6,6 +6,8 @@
 #include <functional>
 #include <queue>
 
+using namespace cologra;
+
 /**
  * Most basic implementation of the sequential graph coloring algorithm.
  *
@@ -19,9 +21,9 @@
 class BasicSequential : public ColoringAlgorithm {
 public:
   BasicSequential();
-  OutType computeColoring(Graph graph) override;
+  Coloring computeColoring(Graph graph) override;
 
-  VerticesSizeType greedyColorOrdered(Graph graph,
+  Vertex greedyColorOrdered(Graph graph,
       ColorVector colorVec,
       priority_queue<int, vector<int>, function<bool(int, int)>> order);
 };

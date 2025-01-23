@@ -8,6 +8,7 @@
 #include <vector>
 
 using namespace std;
+using namespace cologra;
 
 class InputLoader {
 private:

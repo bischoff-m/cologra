@@ -7,8 +7,8 @@ BoostSequential::BoostSequential()
     : ColoringAlgorithm(
           nlohmann::json(), AlgorithmId("BoostSequential", "1.0")) {}
 
-OutType BoostSequential::computeColoring(Graph graph) {
+Coloring BoostSequential::computeColoring(Graph graph) {
   auto [colorVec, colorIter] = getEmptyColoring(graph);
-  ColorType numColors = sequential_vertex_coloring(graph, *colorIter);
+  Color numColors = sequential_vertex_coloring(graph, *colorIter);
   return {numColors, std::move(colorVec)};
 }

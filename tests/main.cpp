@@ -11,6 +11,8 @@
 #include <gtest/gtest.h>
 #include <vector>
 
+using namespace cologra;
+
 class SampleGraph : public ::testing::Test {
 public:
   Graph graph;
@@ -18,7 +20,7 @@ public:
   ColorIterator colorIter;
 
   SampleGraph() {
-    enum nodes { A, B, C, D, E, n };
+    enum nodes : Vertex { A, B, C, D, E, n };
     Edge edgeArray[] = {Edge(A, C),
         Edge(B, B),
         Edge(B, D),
@@ -40,14 +42,14 @@ public:
 
 TEST_F(SampleGraph, GreedyColoring) {
   ColoringAlgorithm *algorithm = new BasicSequential();
-  OutType res = algorithm->computeColoring(graph);
+  Coloring res = algorithm->computeColoring(graph);
   EXPECT_EQ(res.first, 3);
 }
 
 TEST_F(SampleGraph, IsDistance1Coloring) {
   EXPECT_FALSE(isDistance1Coloring(graph, this->colorVec));
   ColoringAlgorithm *algorithm = new BasicSequential();
-  OutType res = algorithm->computeColoring(graph);
+  Coloring res = algorithm->computeColoring(graph);
   EXPECT_TRUE(isDistance1Coloring(graph, *res.second));
 }
 

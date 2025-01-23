@@ -7,9 +7,10 @@
 #include <vector>
 
 using namespace std;
+using namespace cologra;
 
 struct HeuristicNodePair {
-  VertexType node;
+  Vertex node;
   int value;
 };
 

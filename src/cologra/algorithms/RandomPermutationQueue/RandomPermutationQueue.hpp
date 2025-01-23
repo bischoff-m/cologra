@@ -3,6 +3,8 @@
 #include "../../ColoringAlgorithm.hpp"
 #include "../../definitions.hpp"
 
+using namespace cologra;
+
 /**
  * TODO: Add description
  */
@@ -13,7 +15,7 @@ private:
 
 public:
   RandomPermutationQueue(const nlohmann::json &params);
-  OutType computeColoring(Graph graph) override;
+  Coloring computeColoring(Graph graph) override;
   void assistIfParallel() override;
   void stopIfParallel() override;
 };

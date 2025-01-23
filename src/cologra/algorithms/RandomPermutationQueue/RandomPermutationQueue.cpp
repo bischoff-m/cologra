@@ -65,7 +65,7 @@ vector<int> samplePermutationUniform(int size) {
   return result;
 }
 
-OutType RandomPermutationQueue::computeColoring(Graph graph) {
+Coloring RandomPermutationQueue::computeColoring(Graph graph) {
   mpi::communicator world;
   if (world.rank() != 0) {
     throw invalid_argument("This algorithm assumes that computeColoring is "
@@ -78,9 +78,10 @@ OutType RandomPermutationQueue::computeColoring(Graph graph) {
 
   int count = 0;
   bool isDone = false;
-  VerticesSizeType bestNumColors = numeric_limits<VerticesSizeType>::max();
-  vector<ColorType> bestColoring;
+  Vertex bestNumColors = numeric_limits<Vertex>::max();
+  vector<Color> bestColoring;
 
+  // TODO: Possible memory leak, maybe use unique_ptr
   vector<ResultOrException> results(world.size() - 1);
   vector<mpi::request> requests(world.size() - 1);
   vector<mpi::request> idleRequests(world.size() - 1);
@@ -107,6 +108,7 @@ OutType RandomPermutationQueue::computeColoring(Graph graph) {
     requests[i] = world.irecv(i + 1, Message::RESULT, results[i]);
   };
 
+  // While any node is still computing
   while (!all_of(isIdle.begin(), isIdle.end(), [](bool b) { return b; })) {
     // Handle incoming messages
     auto result = mpi::wait_any(requests.begin(), requests.end());
@@ -146,8 +148,7 @@ void RandomPermutationQueue::stopIfParallel() {
   mpi::wait_all(stopRequests, stopRequests + world.size() - 1);
 }
 
-ResultOrException computeColoringOrdered(
-    Graph graph, vector<VerticesSizeType> order) {
+ResultOrException computeColoringOrdered(Graph graph, vector<Vertex> order) {
   if (order.size() != num_vertices(graph)) {
     return ResultOrException("Order size does not match number of vertices");
   }
@@ -158,10 +159,10 @@ ResultOrException computeColoringOrdered(
 
   try {
     // Solve coloring
-    VerticesSizeType numColors =
+    Vertex numColors =
         sequential_vertex_coloring(graph, *orderIter, *colorIter);
 
-    vector<ColorType> coloringVec;
+    vector<Color> coloringVec;
     for (auto it = vertices(graph).first; it != vertices(graph).second; it++) {
       coloringVec.push_back(get(*colorIter, *it));
     }
@@ -217,7 +218,7 @@ void RandomPermutationQueue::assistIfParallel() {
       throw invalid_argument("Graph is empty");
     }
     // Compute new permutation
-    vector<VerticesSizeType> permutation;
+    vector<Vertex> permutation;
     for (auto &section : sections) {
       if (section.first == section.second + 1) {
         permutation.push_back(order[section.first].node);

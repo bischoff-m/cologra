@@ -6,6 +6,7 @@
 #include <string>
 
 using namespace std;
+using namespace cologra;
 using json = nlohmann::json;
 
 struct BenchmarkTarget {
@@ -29,7 +30,7 @@ struct AggregatedValues {
 
 struct ExecutionResult {
   int64_t duration;
-  VerticesSizeType numColors;
+  Vertex numColors;
   string matrixId;
   bool didFail;
   string logOut;

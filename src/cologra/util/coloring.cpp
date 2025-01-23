@@ -21,7 +21,7 @@ bool isDistance1Coloring(Graph graph, ColorVector &colorVec) {
 
 pair<unique_ptr<ColorVector>, unique_ptr<ColorIterator>> getEmptyColoring(
     Graph graph) {
-  auto colorVec = make_unique<vector<ColorType>>(num_vertices(graph));
+  auto colorVec = make_unique<vector<Color>>(num_vertices(graph));
   auto colorIter = getEmptyColoring(graph, *colorVec);
   return {std::move(colorVec), std::move(colorIter)};
 }
