@@ -18,6 +18,7 @@ public:
   ProgressBarIterator(Iterator begin, Iterator end)
       : _it(begin), _end(end),
         bar(option::MaxProgress{std::distance(begin, end)},
+            option::BarWidth{30},
             option::ShowElapsedTime{true},
             option::ShowRemainingTime{true}) {
     show_console_cursor(false);

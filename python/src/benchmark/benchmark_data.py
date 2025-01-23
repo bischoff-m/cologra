@@ -6,6 +6,7 @@ from pydantic import BaseModel
 class BenchmarkTarget(BaseModel):
     datasetIds: list[str]
     algorithmIds: list[str]
+    graphRepresentation: str
     parameters: dict
 
 
@@ -14,6 +15,7 @@ class MachineInfo(BaseModel):
     totalMemoryBytes: int
     cpuNames: list[str]
     gpuNames: list[str]
+    mpiSize: int
 
 
 class AggregatedValues(BaseModel):
@@ -25,10 +27,10 @@ class AggregatedValues(BaseModel):
 class ExecutionResult(BaseModel):
     duration: int
     numColors: int
+    coloring: list[int]
     matrixId: str
+    graphSize: int
     didFail: bool
-    logOut: str
-    logErr: str
 
 
 class BenchmarkResult(BaseModel):
@@ -37,6 +39,8 @@ class BenchmarkResult(BaseModel):
     results: list[ExecutionResult]
     datasetId: str
     algorithmId: str
+    parentAlgorithmId: str | None = None
+    graphRepresentation: str
     parameters: dict
     machineInfo: MachineInfo
 

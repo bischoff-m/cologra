@@ -3,14 +3,19 @@
   "targets": [
     {
       "datasetIds": [
-        "small_mtx"
+        "many_small"
       ],
       "algorithmIds": [
+        "BasicSequential",
+        "BoostSequential",
+        "OrderedSequential",
+        "BasicParallel",
         "RandomPermutationQueue"
       ],
+      "graphRepresentation": "COLUMN_INTERSECTION",
       "parameters": {
         "heuristic": "maxDegreeFirst",
-        "numPermutations": 10
+        "numPermutations": 300
       }
     }
   ]

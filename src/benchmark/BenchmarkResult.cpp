@@ -19,22 +19,26 @@ json BenchmarkResult::toJson() {
   for (const auto &result : results) {
     output["results"].push_back({{"duration", result.duration},
         {"numColors", result.numColors},
+        {"coloring", result.coloring},
         {"matrixId", result.matrixId},
-        {"didFail", result.didFail},
-        {"logOut", result.logOut},
-        {"logErr", result.logErr}});
+        {"graphSize", result.graphSize},
+        {"didFail", result.didFail}});
   }
 
   output["datasetId"] = datasetId;
   output["algorithmId"] = algorithmId;
   output["parameters"] = parameters;
+
   output["machineInfo"] = {{"osName", machineInfo.osName},
       {"totalMemoryBytes", machineInfo.totalMemoryBytes},
       {"cpuNames", machineInfo.cpuNames},
-      {"gpuNames", machineInfo.gpuNames}};
+      {"gpuNames", machineInfo.gpuNames},
+      {"mpiSize", machineInfo.mpiSize}};
+
   output["aggregated"] = {{"totalTimeNs", aggregated.totalTimeNs},
       {"averageTimeNs", aggregated.averageTimeNs},
       {"sumNumColors", aggregated.sumNumColors}};
+  output["graphRepresentation"] = representationToString(graphRepresentation);
 
   return output;
 }
@@ -48,6 +52,8 @@ void BenchmarkResult::writeMultiple(
   }
   output["target"] = {{"datasetIds", target.datasetIds},
       {"algorithmIds", target.algorithmIds},
+      {"graphRepresentation",
+          representationToString(target.graphRepresentation)},
       {"parameters", target.parameters}};
 
   // Generate hash of input values
@@ -62,6 +68,7 @@ void BenchmarkResult::writeMultiple(
   for (const auto &algorithmId : target.algorithmIds) {
     uniqueValue += algorithmId;
   }
+  uniqueValue += representationToString(target.graphRepresentation);
   uniqueValue += target.parameters.dump();
   size_t hashValue = std::hash<string>{}(uniqueValue);
   stringstream hashStr;

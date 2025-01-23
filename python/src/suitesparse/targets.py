@@ -97,6 +97,23 @@ def subset_small_square(df: pd.DataFrame) -> pd.DataFrame:
     return df.sample(n=100, random_state=42)
 
 
+@subset("large_square")
+def subset_large_square(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df["format"] == MatrixFormats.MATRIX_MARKET.value]
+    df = df[df["nrows"] == df["ncols"]]
+    df = df[(df["nnz"] < 1e6) & (df["nnz"] > 1e5)]
+    df = df[df["isReal"]]
+    return df.sample(n=10, random_state=42)
+
+
+@subset("many_small")
+def subset_many_small(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df["format"] == MatrixFormats.MATRIX_MARKET.value]
+    df = df[df["nnz"] < 2e4]
+    df = df[df["isReal"]]
+    return df
+
+
 if __name__ == "__main__":
     df = index_available()
     print(df.info())

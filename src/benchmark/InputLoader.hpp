@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../cologra/definitions.hpp"
+#include "../cologra/util/matrixToGraph.hpp"
 #include "SuiteSparseMatrix.hpp"
 #include <map>
 #include <optional>
@@ -19,12 +20,15 @@ private:
 
   void loadIndex(vector<string> subsetIds);
   void loadSubsets();
-  void indexToGraphs(bool useCache = false);
+  void indexToGraphs(
+      GraphRepresentation graphRepresentation, bool useCache = false);
   void loadDatasets(vector<string> subsetIds);
 
 public:
   InputLoader();
   ~InputLoader();
-  void load(vector<string> subsetIds, bool useGraphCache = false);
+  void load(vector<string> subsetIds,
+      GraphRepresentation graphRepresentation,
+      bool useGraphCache = false);
   map<string, Graph> getDataset(string id);
 };

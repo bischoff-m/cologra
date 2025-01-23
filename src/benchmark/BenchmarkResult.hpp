@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../cologra/definitions.hpp"
+#include "../cologra/util/matrixToGraph.hpp"
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
@@ -12,6 +13,7 @@ using json = nlohmann::json;
 struct BenchmarkTarget {
   vector<string> datasetIds;
   vector<string> algorithmIds;
+  GraphRepresentation graphRepresentation;
   json parameters;
 };
 
@@ -20,6 +22,7 @@ struct MachineInfo {
   int64_t totalMemoryBytes;
   vector<string> cpuNames;
   vector<string> gpuNames;
+  int mpiSize;
 };
 
 struct AggregatedValues {
@@ -31,10 +34,10 @@ struct AggregatedValues {
 struct ExecutionResult {
   int64_t duration;
   Vertex numColors;
+  ColorVector coloring;
   string matrixId;
+  Vertex graphSize;
   bool didFail;
-  string logOut;
-  string logErr;
 };
 
 struct BenchmarkResult {
@@ -44,6 +47,7 @@ struct BenchmarkResult {
   string datasetId;
   string algorithmId;
   std::optional<string> parentAlgorithmId;
+  GraphRepresentation graphRepresentation;
   json parameters;
   MachineInfo machineInfo;
 

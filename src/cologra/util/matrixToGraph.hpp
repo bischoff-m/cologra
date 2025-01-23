@@ -5,6 +5,14 @@
 
 using namespace cologra;
 
+enum class GraphRepresentation {
+  COLUMN_INTERSECTION,
+  ROW_INTERSECTION,
+  ADJACENCY
+};
+std::string representationToString(GraphRepresentation repr);
+GraphRepresentation representationFromString(const std::string &repr);
+
 /**
  * Compute the undirected column intersection graph of the given matrix.
  *

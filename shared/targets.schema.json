@@ -19,6 +19,14 @@
               "type": "string"
             }
           },
+          "graphRepresentation": {
+            "type": "string",
+            "enum": [
+              "COLUMN_INTERSECTION",
+              "ROW_INTERSECTION",
+              "ADJACENCY"
+            ]
+          },
           "parameters": {
             "type": "object",
             "properties": {
@@ -34,6 +42,7 @@
         "required": [
           "datasetIds",
           "algorithmIds",
+          "graphRepresentation",
           "parameters"
         ]
       }

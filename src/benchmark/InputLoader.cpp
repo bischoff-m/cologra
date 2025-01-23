@@ -37,14 +37,16 @@ InputLoader::~InputLoader() {
   }
 }
 
-void InputLoader::load(vector<string> subsetIds, bool useGraphCache) {
+void InputLoader::load(vector<string> subsetIds,
+    GraphRepresentation graphRepresentation,
+    bool useGraphCache) {
   loadSubsets();
   if (subsets->empty()) {
     cout << "No subsets found in " << Paths::subsets << endl;
     return;
   }
   loadIndex(subsetIds);
-  indexToGraphs(useGraphCache);
+  indexToGraphs(graphRepresentation, useGraphCache);
   loadDatasets(subsetIds);
 }
 
@@ -114,7 +116,8 @@ void InputLoader::loadSubsets() {
   this->subsets = subsets;
 }
 
-void InputLoader::indexToGraphs(bool useCache) {
+void InputLoader::indexToGraphs(
+    GraphRepresentation graphRepresentation, bool useCache) {
   if (!index.has_value()) {
     cout << "Index not loaded. Call loadIndex() first." << endl;
     return;
@@ -147,7 +150,13 @@ void InputLoader::indexToGraphs(bool useCache) {
         matrixPtr->loadMatrix();
         try {
           // Convert matrix to graph
-          Graph graph = columnIntersectionGraph(matrixPtr->getMatrix());
+          Graph graph;
+          if (graphRepresentation == GraphRepresentation::COLUMN_INTERSECTION)
+            graph = columnIntersectionGraph(matrixPtr->getMatrix());
+          else if (graphRepresentation == GraphRepresentation::ROW_INTERSECTION)
+            graph = rowIntersectionGraph(matrixPtr->getMatrix());
+          else if (graphRepresentation == GraphRepresentation::ADJACENCY)
+            graph = adjacencyGraph(matrixPtr->getMatrix());
           graphs[id] = graph;
           count++;
 

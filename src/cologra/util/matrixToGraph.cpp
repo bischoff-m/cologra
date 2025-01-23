@@ -1,6 +1,24 @@
 #include "matrixToGraph.hpp"
 #include <boost/graph/adjacency_list.hpp>
 
+std::map<GraphRepresentation, std::string> reprToString = {
+    {GraphRepresentation::COLUMN_INTERSECTION, "COLUMN_INTERSECTION"},
+    {GraphRepresentation::ROW_INTERSECTION, "ROW_INTERSECTION"},
+    {GraphRepresentation::ADJACENCY, "ADJACENCY"}};
+
+std::string representationToString(GraphRepresentation repr) {
+  return reprToString.at(repr);
+}
+
+GraphRepresentation representationFromString(const std::string &repr) {
+  for (const auto &pair : reprToString) {
+    if (pair.second == repr) {
+      return pair.first;
+    }
+  }
+  throw std::runtime_error("Unknown graph representation: " + repr);
+}
+
 Graph columnIntersectionGraph(const Eigen::SparseMatrix<double> &matrix) {
   int numCols = matrix.cols();
   Graph graph(numCols);

@@ -15,6 +15,8 @@ using namespace std::chrono;
 using namespace cologra;
 
 MachineInfo getMachineInfo() {
+  boost::mpi::communicator world;
+
   vector<string> cpuNames;
   for (const auto &cpu : hwinfo::getAllCPUs()) {
     cpuNames.push_back(cpu.modelName());
@@ -25,11 +27,23 @@ MachineInfo getMachineInfo() {
   }
   hwinfo::OS os;
   hwinfo::Memory memory;
-  return {os.name(), memory.total_Bytes(), cpuNames, gpuNames};
+  return {os.name(), memory.total_Bytes(), cpuNames, gpuNames, world.size()};
 }
 
 Benchmark::Benchmark(vector<BenchmarkTarget> targets)
-    : targets(targets), loader() {}
+    : targets(targets), loader() {
+  if (targets.empty()) {
+    throw runtime_error("No targets specified for benchmark");
+  }
+  // Check if all targets have the same graph representation
+  GraphRepresentation representation = targets[0].graphRepresentation;
+  for (const auto &target : targets) {
+    if (target.graphRepresentation != representation) {
+      throw runtime_error(
+          "Different graph representations is not yet supported");
+    }
+  }
+}
 
 void Benchmark::measure(AlgorithmFactory getAlgorithm) {
   boost::mpi::communicator world;
@@ -42,7 +56,7 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
     for (const auto &target : targets)
       for (const auto &datasetId : target.datasetIds)
         datasetIds.push_back(datasetId);
-    loader.load(datasetIds);
+    loader.load(datasetIds, targets[0].graphRepresentation);
   }
 
   for (const auto &target : targets) {
@@ -63,6 +77,7 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
                 .count();
         benchmarkResult.datasetId = datasetId;
         benchmarkResult.algorithmId = algorithmId;
+        benchmarkResult.graphRepresentation = target.graphRepresentation;
         benchmarkResult.parameters = target.parameters;
         benchmarkResult.machineInfo = getMachineInfo();
 
@@ -72,38 +87,32 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
         ProgressBarIterator<Graph> progressBar(dataset.begin(), dataset.end());
         while (progressBar.begin() != progressBar.end()) {
           auto &[matrixId, graph] = progressBar.next();
-          Vertex numColors = 0;
+          Coloring coloring;
           int64_t duration = 0;
           bool didFail = false;
 
-          // TODO: Fix capture log when running in parallel
-          // CaptureLog *rd = new CaptureLog();
           try {
             auto t1 = high_resolution_clock::now();
-            numColors = algorithm->computeColoring(graph).first;
+            coloring = algorithm->computeColoring(graph);
             auto t2 = high_resolution_clock::now();
             duration = duration_cast<nanoseconds>(t2 - t1).count();
-          } catch ([[with_stacktrace]] std::exception &e) {
-            // TODO: Parallel?
+          } catch (std::exception &e) {
             didFail = true;
             // Write to cerr to avoid interference with the capture
-            cerr << e.what() << "\n" << boost::stacktrace::stacktrace() << endl;
+            cerr << "Error during coloring: " << e.what() << endl;
           }
 
           ExecutionResult result;
           result.duration = duration;
-          result.numColors = numColors;
+          result.numColors = coloring.first;
+          result.coloring = *coloring.second.release();
           result.matrixId = matrixId;
+          result.graphSize = num_vertices(graph);
           result.didFail = didFail;
-          // result.logOut = rd->getCout();
-          // result.logErr = rd->getCerr();
-          result.logOut = "";
-          result.logErr = "";
           benchmarkResult.results.push_back(result);
 
-          // delete rd;
           totalDuration += duration;
-          totalNumColors += numColors;
+          totalNumColors += coloring.first;
         }
 
         benchmarkResult.aggregated.totalTimeNs = totalDuration;
@@ -137,8 +146,10 @@ Benchmark Benchmark::fromJson(json targetsDefinition) {
       for (const auto &algorithmId : target["algorithmIds"]) {
         algorithmIds.push_back(algorithmId);
       }
+      GraphRepresentation representation =
+          representationFromString(target["graphRepresentation"]);
       json params = target["parameters"];
-      parsed.push_back({datasetIds, algorithmIds, params});
+      parsed.push_back({datasetIds, algorithmIds, representation, params});
     }
     return Benchmark(parsed);
   } catch (const std::exception &e) {
