@@ -44,13 +44,19 @@ build:
 	( cmake --preset=vcpkg && cmake --build build --config Release -j${JOBS} )
 
 run: build
+	- build/src/cologra_cli
+
+profile: build
+	- valgrind --tool=callgrind build/src/cologra_cli
+
+run-mpi: build
 	- mpirun -np 8 build/src/cologra_cli
 
 debug:
 	( cmake -DCMAKE_BUILD_TYPE=Debug --preset=vcpkg && cmake --build build --config Debug -j${JOBS} )
 
 run-debug: debug
-	- mpirun -np 3 valgrind --track-origins=yes --leak-check=yes --num-callers=100 --log-file=output%p.txt build/src/cologra_cli
+	- mpirun -np 3 valgrind --track-origins=yes --leak-check=yes --num-callers=100 --log-file=output%p.txt --suppressions=./vcpkg_installed/x64-linux/share/openmpi/openmpi/openmpi-valgrind.supp build/src/cologra_cli
 
 test: build
 	( cd build/tests && ctest . || ctest . --rerun-failed --output-on-failure )

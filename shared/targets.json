@@ -1,0 +1,17 @@
+{
+  "$schema": "./targets.schema.json",
+  "targets": [
+    {
+      "datasetIds": [
+        "small_mtx"
+      ],
+      "algorithmIds": [
+        "BasicParallel"
+      ],
+      "parameters": {
+        "heuristic": "maxDegreeFirst",
+        "numPermutations": 10
+      }
+    }
+  ]
+}

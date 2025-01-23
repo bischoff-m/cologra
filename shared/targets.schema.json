@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "datasetIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "algorithmIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "heuristic": {
+                "type": "string"
+              },
+              "numPermutations": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "required": [
+          "datasetIds",
+          "algorithmIds",
+          "parameters"
+        ]
+      }
+    }
+  },
+  "required": [
+    "targets"
+  ]
+}

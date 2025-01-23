@@ -16,9 +16,6 @@ typedef graph_traits<Graph>::degree_size_type DegreeType;
 typedef property_map<Graph, vertex_index_t>::const_type VertexIndexMap;
 typedef std::vector<ColorType> ColorVector;
 typedef iterator_property_map<ColorType *, VertexIndexMap> ColorIterator;
-typedef std::pair<graph_traits<Graph>::vertex_iterator,
-    graph_traits<Graph>::vertex_iterator>
-    VertexIteratorRange;
 // TODO: Rename OutType to Coloring
 typedef std::pair<ColorType, std::unique_ptr<ColorVector>> OutType;
 

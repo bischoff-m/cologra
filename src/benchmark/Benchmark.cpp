@@ -123,3 +123,26 @@ void Benchmark::measure(AlgorithmFactory getAlgorithm) {
     cout << "Benchmark finished" << endl;
   }
 }
+
+Benchmark Benchmark::fromJson(json targetsDefinition) {
+  vector<BenchmarkTarget> parsed;
+  try {
+    for (const auto &target : targetsDefinition["targets"]) {
+      cout << target << endl;
+      vector<string> datasetIds;
+      for (const auto &datasetId : target["datasetIds"]) {
+        datasetIds.push_back(datasetId);
+      }
+      vector<string> algorithmIds;
+      for (const auto &algorithmId : target["algorithmIds"]) {
+        algorithmIds.push_back(algorithmId);
+      }
+      json params = target["parameters"];
+      parsed.push_back({datasetIds, algorithmIds, params});
+    }
+    return Benchmark(parsed);
+  } catch (const std::exception &e) {
+    throw runtime_error(
+        "Error parsing benchmark definition: " + string(e.what()));
+  }
+}

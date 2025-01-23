@@ -126,23 +126,23 @@ int main(int argc, char **argv) {
   }
 
   int k;
+  json params;
   if (cmdl["--use-degeneracy"] >> k) {
     degeneracyGraph(graph, k);
   }
-  if (cmdl["--params"])){
-    json params = json::parse(cmdl("--params", "").str());
+  if (cmdl["--params"]) {
+    params = json::parse(cmdl("--params", "").str());
+  } else {
+    params = {};
   }
-  else{
-    json params = {};
-  }
-  ColoringAlgorithm *algo =
-createAlgorithm(cmdl({"-a", "--algorithm"}).str(), params);
+  unique_ptr<ColoringAlgorithm> algo =
+      createAlgorithm(cmdl({"-a", "--algorithm"}).str(), params);
 
   OutType result = algo->computeColoring(graph);
   std::cout << result.first << " colors used" << std::endl;
 
   for (auto it = vertices(graph).first; it != vertices(graph).second; it++) {
-    std::cout << result.second[*it] << " ";
+    std::cout << (*result.second)[*it] << " ";
   }
   std::cout << std::endl;
 

@@ -24,4 +24,5 @@ public:
   Benchmark(vector<BenchmarkTarget> targets);
   ~Benchmark() = default;
   void measure(AlgorithmFactory getAlgorithm);
+  static Benchmark fromJson(json targetsDefinition);
 };
