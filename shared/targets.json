@@ -3,7 +3,7 @@
   "targets": [
     {
       "datasetIds": [
-        "many_small"
+        "small_mtx"
       ],
       "algorithmIds": [
         "BasicSequential",
@@ -15,7 +15,7 @@
       "graphRepresentation": "COLUMN_INTERSECTION",
       "parameters": {
         "heuristic": "maxDegreeFirst",
-        "numPermutations": 300
+        "numPermutations": 100
       }
     }
   ]
