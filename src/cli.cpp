@@ -7,6 +7,7 @@
 #include "cologra/definitions.hpp"
 #include "cologra/util/createAlgorithm.hpp"
 #include "cologra/util/degeneracy.hpp"
+#include "cologra/util/inttest.hpp"
 #include "cologra/util/display.hpp"
 #include "cologra/util/matrixCompression.hpp"
 #include "cologra/util/matrixIO.hpp"
@@ -229,6 +230,18 @@ int main(int argc, char **argv) {
       writeMatrixMarket(outfile, compressed_matrix);
     }
   }
+  
+      
+  if (cmdl["--inttest"]){
+    if (inttest(matrix, result, 100)){
+      std::cout << "IntegrationTest was successful!" << std::endl;
+    }
+    else{
+      std::cout << "IntegrationTest failed!" << std::endl;
+
+    }
+  }
+
 
   // TODO: rebuild coloring from degenerate graph
 
