@@ -39,7 +39,7 @@ def plot_permut_to_colors(results: list[BenchmarkResult], lines: dict[str, int] 
     plt.close()
 
 
-def plot_num_permutations(results: list[BenchmarkResult], max_num_colors: int):
+def plot_num_permutations(results: list[BenchmarkResult]):
     """Plot parameters.numPermutations vs aggregated.sumNumColors as a line
     plot"""
     xy = [
@@ -50,7 +50,6 @@ def plot_num_permutations(results: list[BenchmarkResult], max_num_colors: int):
     x, y = zip(*xy)
     plt.figure()
     plt.plot(x, y, label="RandomPermutationQueue")
-    plt.axhline(y, label="Uncompressed", color=plt.cm.tab10(5))
     plt.xscale("log")
     plt.xlabel("Number of permutations")
     plt.ylabel("Number of colors")
@@ -92,12 +91,12 @@ def run(benchmarks: dict[str, Benchmark], max_num_colors: int):
 
     plot_permut_to_colors(rpq_results, other_results)
 
-    # results = [
-    #     result
-    #     for result in rpq_results
-    #     if result.parameters["heuristic"] == "maxDegreeFirst"
-    # ]
-    # plot_num_permutations(results, max_num_colors)
+    results = [
+        result
+        for result in rpq_results
+        if result.parameters["heuristic"] == "maxDegreeFirst"
+    ]
+    plot_num_permutations(results, max_num_colors)
 
 
 if __name__ == "__main__":
@@ -115,5 +114,5 @@ if __name__ == "__main__":
             ncols[matrix["id"]] = matrix["ncols"]
     max_num_colors = sum(ncols.values())
 
-    benchmarks = Benchmark.fromFiles(Paths.shared / "benchmarks/until_2025-01-23")
+    benchmarks = Benchmark.fromFiles(Paths.shared / "benchmarks")
     run(benchmarks, max_num_colors)

@@ -51,5 +51,5 @@ def print_biggest_advantage(benchmark: Benchmark):
 
 if __name__ == "__main__":
     benchmarks = Benchmark.fromFiles(Paths.shared / "benchmarks")
-    bench = benchmarks["benchmark_2025-01-23_20-34-55_148931"]
+    bench = benchmarks["benchmark_2025-01-30_17-30-53_6854ca"]
     print_biggest_advantage(bench)
